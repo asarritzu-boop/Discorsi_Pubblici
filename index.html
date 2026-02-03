@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Discorsi Pubblici Management</title>
+    
+    <meta name="theme-color" content="#f2f2f7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icona-192.png">
+
+    <style>
+        :root {
+            --ios-bg: #f2f2f7;
+            --btn-calendario: #5856d6;
+            --btn-schemi: #ff9500;
+            --btn-esterni: #34c759;
+            --btn-interni: #007aff;
+            --text-light: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--ios-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #1c1c1e;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header e Tasto Condividi */
+        .header {
+            width: 100%;
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .share-btn {
+            position: absolute;
+            top: 20px; /* Posizionato in alto */
+            right: 20px; /* Distanziato dal bordo */
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.06);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 18px;
+            color: #007aff;
+        }
+
+        .app-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #3a3a3c;
+            margin: 0;
+        }
+
+        /* Menu Bottoni Colorati */
+        .menu-container {
+            width: 90%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            border: none;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-align: center; /* Testo centrato */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: transform 0.1s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        /* Colori Specifici */
+        .btn-calendario { background-color: var(--btn-calendario); }
+        .btn-schemi     { background-color: var(--btn-schemi); }
+        .btn-esterni    { background-color: var(--btn-esterni); }
+        .btn-interni    { background-color: var(--btn-interni); }
+
+        /* Footer Backup */
+        .footer-menu {
+            margin-top: auto;
+            padding-top: 30px;
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-backup {
+            background: none;
+            border: none;
+            color: #8e8e93;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button class="share-btn" onclick="shareApp()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+        </button>
+        <img src="icona-192.png" alt="App Icon" class="app-icon">
+        <h1>Discorsi Pubblici Management</h1>
+    </div>
+
+    <div class="menu-container">
+        <button class="btn btn-calendario">CALENDARIO</button>
+        <button class="btn btn-schemi">ELENCO SCHEMI</button>
+        <button class="btn btn-esterni">ORATORI ESTERNI</button>
+        <button class="btn btn-interni">ORATORI INTERNI</button>
+    </div>
+
+    <div class="footer-menu">
+        <button class="btn-backup" onclick="alert('Funzione Importa non ancora attiva')">Importa Backup</button>
+        <button class="btn-backup" onclick="exportData()">Esporta Backup</button>
+    </div>
+
+    <script>
+        async function shareApp() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Discorsi Pubblici Management',
+                        text: 'App per la gestione dei discorsi pubblici',
+                        url: window.location.href
+                    });
+                } catch (err) { console.log(err); }
+            } else {
+                alert("Copia questo link: " + window.location.href);
+            }
+        }
+
+        function exportData() {
+            const data = JSON.stringify(localStorage);
+            const blob = new Blob([data], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'backup_discorsi.json';
+            a.click();
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
