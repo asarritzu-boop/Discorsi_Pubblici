@@ -1051,31 +1051,47 @@ function importEsterniCSV(e) {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-        const rows = ev.target.result.split("\n").slice(1); // Salta l'intestazione
-        let oratori = getOratoriEsterni();
-        
-        rows.forEach(r => {
-            if (r.trim() === "") return;
-            const cols = r.split(";").map(c => c.replace(/"/g, '').trim());
-            if(cols[0] && cols[1]) { // Nome e Congregazione sono necessari
-                oratori.push({ 
-                    id: Date.now() + Math.random(), 
-                    nome: cols[0], 
-                    cong: cols[1], 
-                    tel: cols[2] || '', 
-                    schemi: cols[3] || '', 
-                    note: cols[4] || '' 
-                });
-            }
-        });
-        
-        localStorage.setItem('oratori_esterni', JSON.stringify(oratori));
-        renderEsterni();
-        alert("Importazione completata!");
+        try {
+            const content = ev.target.result;
+            // Divide per linee e rimuove l'intestazione
+            const rows = content.split(/\r?\n/).slice(1); 
+            let oratori = getOratoriEsterni();
+            let contatore = 0;
+            
+            rows.forEach(r => {
+                if (r.trim() === "") return;
+                
+                // Gestione flessibile del separatore (prova ; poi ,)
+                let cols = r.split(";");
+                if (cols.length < 2) cols = r.split(",");
+                
+                cols = cols.map(c => c.replace(/"/g, '').trim());
+
+                if(cols[0] && cols[1]) { // Nome e Congregazione minimi
+                    oratori.push({ 
+                        id: Date.now() + Math.random(), 
+                        nome: cols[0], 
+                        cong: cols[1], 
+                        tel: cols[2] || '', 
+                        schemi: cols[3] || '', 
+                        note: cols[4] || '' 
+                    });
+                    contatore++;
+                }
+            });
+            
+            localStorage.setItem('oratori_esterni', JSON.stringify(oratori));
+            renderEsterni();
+            alert("Importazione completata! Aggiunti " + contatore + " oratori.");
+        } catch (err) {
+            console.error("Errore importazione:", err);
+            alert("Errore durante la lettura del file CSV.");
+        }
         e.target.value = ''; // Reset input file
     };
     reader.readAsText(file);
 }
+
 
 function pulisciRicercaEsterni() {
     document.getElementById('searchEsterno').value = ''; // Pulisce il campo
