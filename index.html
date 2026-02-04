@@ -89,7 +89,7 @@
         <div class="menu-container">
             <button class="btn btn-calendario" onclick="toggleView('calendario')">CALENDARIO</button>
             <button class="btn btn-schemi" onclick="toggleView('schemi')">ELENCO SCHEMI</button>
-            <button class="btn btn-esterni" onclick="alert('Funzione Oratori Esterni in sviluppo')">ORATORI ESTERNI</button>
+            <button class="btn btn-esterni" onclick="toggleView('esterni')">ORATORI ESTERNI</button>
             <button class="btn btn-interni" onclick="toggleView('interni')">ORATORI INTERNI</button>
         </div>
         <div class="footer-menu">
@@ -156,27 +156,73 @@
     </div>
 
     <div id="view-interni" class="view-overlay">
-        <div style="width:95%; max-width:600px; margin:auto; padding: 20px 0;">
-            <button class="btn-backup" onclick="toggleView('main')">‹ Indietro</button>
-            <h2 style="text-align:center;">Gestione Oratori Interni</h2>
-            <div class="input-group">
-                <input type="text" id="oratNome" placeholder="Nome e Cognome" style="margin-bottom:10px;">
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="oratCong" placeholder="Congregazione" style="flex:1;">
-                    <input type="tel" id="oratTel" placeholder="Telefono" style="flex:1;">
-                </div>
-                <input type="text" id="oratSchemi" placeholder="Numeri schemi (es: 1, 5, 23)" style="margin-bottom:10px;">
-                <textarea id="oratNote" placeholder="Osservazioni" style="margin-bottom:10px;"></textarea>
-                <button class="btn btn-interni" id="btnSalvaOratore" onclick="salvaOratore()" style="width:100%;">AGGIUNGI ORATORE</button>
-                <div style="display:flex; justify-content:space-between; margin-top:15px;">
-                    <button class="btn-backup" style="color:var(--btn-interni)" onclick="document.getElementById('csvOratInput').click()">Importa CSV</button>
-                    <button class="btn-backup" style="color:var(--btn-interni)" onclick="exportOratoriCSV()">Esporta CSV</button>
-                    <input type="file" id="csvOratInput" accept=".csv" style="display:none" onchange="importOratoriCSV(event)">
-                </div>
+    <div style="width:95%; max-width:600px; margin:auto; padding: 20px 0;">
+        <button class="btn-backup" onclick="toggleView('main')">‹ Indietro</button>
+        <h2 style="text-align:center;">Gestione Oratori Interni</h2>
+        
+        <div class="input-group">
+            <input type="text" id="oratNome" placeholder="Nome e Cognome" style="margin-bottom:10px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="oratCong" placeholder="Congregazione" style="flex:1;">
+                <input type="tel" id="oratTel" placeholder="Telefono" style="flex:1;">
             </div>
-            <div id="lista-oratori-render"></div>
+            <input type="text" id="oratSchemi" placeholder="Numeri schemi (es: 1, 5, 23)" style="margin-bottom:10px;">
+            <textarea id="oratNote" placeholder="Osservazioni" style="margin-bottom:10px;"></textarea>
+            <button class="btn btn-interni" id="btnSalvaOratore" onclick="salvaOratore()" style="width:100%;">AGGIUNGI ORATORE</button>
+            <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                <button class="btn-backup" style="color:var(--btn-interni)" onclick="document.getElementById('csvOratInput').click()">Importa CSV</button>
+                <button class="btn-backup" style="color:var(--btn-interni)" onclick="exportOratoriCSV()">Esporta CSV</button>
+                <input type="file" id="csvOratInput" accept=".csv" style="display:none" onchange="importOratoriCSV(event)">
+            </div>
         </div>
+
+        <div class="input-group">
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <input type="text" id="searchOratore" placeholder="Cerca nome, numero o titolo schema..." oninput="renderOratori()" style="flex: 1;">
+                <button onclick="pulisciRicercaOratori()" style="background: #e5e5ea; border: none; border-radius: 8px; padding: 0 15px; color: #3a3a3c; font-weight: bold; cursor: pointer;">✕</button>
+            </div>
+            <div id="counter-risultati" style="font-size: 12px; color: #8e8e93; font-weight: 500; min-height: 15px;"></div>
+        </div>
+
+        <div id="lista-oratori-render"></div>
     </div>
+</div>
+
+
+<div id="view-esterni" class="view-overlay">
+    <div style="width:95%; max-width:600px; margin:auto; padding: 20px 0;">
+        <button class="btn-backup" onclick="toggleView('main')">‹ Indietro</button>
+        <h2 style="text-align:center;">Gestione Oratori Esterni</h2>
+        
+        <div class="input-group">
+            <input type="text" id="extNome" placeholder="Nome e Cognome" style="margin-bottom:10px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="extCong" placeholder="Congregazione" style="flex:1;">
+                <input type="tel" id="extTel" placeholder="Telefono" style="flex:1;">
+            </div>
+            <input type="text" id="extSchemi" placeholder="Numeri schemi (es: 2, 45, 110)" style="margin-bottom:10px;">
+            <textarea id="extNote" placeholder="Osservazioni"></textarea>
+            <button class="btn btn-esterni" id="btnSalvaEsterno" onclick="salvaOratoreEsterno()" style="width:100%; margin-top:10px;">AGGIUNGI ORATORE ESTERNO</button>
+        </div>
+
+<div style="display:flex; justify-content:space-between; margin-top:15px;">
+    <button class="btn-backup" style="color:var(--btn-esterni)" onclick="document.getElementById('csvExtInput').click()">Importa CSV</button>
+    <button class="btn-backup" style="color:var(--btn-esterni)" onclick="exportEsterniCSV()">Esporta CSV</button>
+    <input type="file" id="csvExtInput" accept=".csv" style="display:none" onchange="importEsterniCSV(event)">
+</div>
+
+        <div class="input-group">
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" id="searchEsterno" placeholder="Cerca congregazione, oratore o schema..." oninput="renderEsterni()" style="flex: 1;">
+        <button onclick="pulisciRicercaEsterni()" style="background: #e5e5ea; border: none; border-radius: 8px; padding: 0 15px; color: #3a3a3c; font-weight: bold; cursor: pointer;">✕</button>
+    </div>
+    <div id="counter-risultati-ext" style="font-size: 12px; color: #8e8e93; font-weight: 500; min-height: 15px;"></div>
+</div>
+
+        <div id="lista-esterni-render"></div>
+    </div>
+</div>
+
 
     <div id="view-assegna" class="modal-container">
     <div style="background:white; width:90%; max-width:400px; padding:25px; border-radius:20px;">
@@ -227,15 +273,17 @@
         document.getElementById('giornoAdunanza').value = giornoAdunanzaScelto;
 
         function toggleView(view) {
-            document.getElementById('main-menu').style.display = (view === 'main') ? 'flex' : 'none';
-            document.getElementById('view-schemi').style.display = (view === 'schemi') ? 'block' : 'none';
-            document.getElementById('view-calendario').style.display = (view === 'calendario') ? 'block' : 'none';
-            document.getElementById('view-interni').style.display = (view === 'interni') ? 'block' : 'none';
-            
-            if(view === 'schemi') renderSchemi();
-            if(view === 'calendario') renderCalendario();
-            if(view === 'interni') renderOratori();
-        }
+    document.getElementById('main-menu').style.display = (view === 'main') ? 'flex' : 'none';
+    document.getElementById('view-schemi').style.display = (view === 'schemi') ? 'block' : 'none';
+    document.getElementById('view-calendario').style.display = (view === 'calendario') ? 'block' : 'none';
+    document.getElementById('view-interni').style.display = (view === 'interni') ? 'block' : 'none';
+    document.getElementById('view-esterni').style.display = (view === 'esterni') ? 'block' : 'none'; // Aggiunto
+    
+    if(view === 'schemi') renderSchemi();
+    if(view === 'calendario') renderCalendario();
+    if(view === 'interni') renderOratori();
+    if(view === 'esterni') renderEsterni(); // Aggiunto
+}
 
         function getSchemi() { return JSON.parse(localStorage.getItem('schemi')) || []; }
         function getEventi() { return JSON.parse(localStorage.getItem('eventi')) || []; }
@@ -381,10 +429,12 @@
                     const dIso = `${y}-${m}-${day}`;
 
                     const imp = eventi.find(e => {
-                        if (e.data !== dIso) return false;
-                        if (e.tipo === 'speciale') return true;
-                        return (e.luogo && e.luogo.toLowerCase().includes("interno"));
-                    });
+    if (e.data !== dIso) return false;
+    if (e.tipo === 'speciale') return true;
+    
+    // Modificato: restituisce l'evento se è un discorso, sia interno che esterno
+    return e.tipo === 'discorso'; 
+});
                     
                     html += `
                     <div class="card" style="padding:15px; border-left: 6px solid ${imp ? (imp.tipo === 'speciale' ? '#ff3b30' : '#5856d6') : '#c7c7cc'}">
@@ -405,19 +455,30 @@
         }
 
         function renderContenutoGiorno(imp) {
-    if(!imp) return '<div style="color:#c7c7cc; font-style:italic;">Libero</div>';
-    if(imp.tipo === 'speciale') return `<div style="font-weight:bold; color:#ff3b30;">${imp.nome.toUpperCase()}</div>`;
+    if (!imp) return '<div style="font-weight:600; font-size:18px; color:#c7c7cc;">Libero</div>';
     
-    const s = getSchemi().find(x => x.num === imp.schemaNum);
+    if (imp.tipo === 'speciale') {
+        return `<div style="font-weight:bold; font-size:18px; color:#ff3b30;">${imp.nome}</div>`;
+    }
+
+    const schemi = getSchemi();
+    const sInfo = schemi.find(s => s.num === imp.schemaNum);
+    const titolo = sInfo ? sInfo.titolo : "Titolo non trovato";
     
-    // Cerchiamo la congregazione dell'oratore nei dati salvati
-    const oratoreDati = getOratori().find(o => o.nome.toLowerCase() === imp.oratore.toLowerCase());
-    const congregazione = oratoreDati ? ` (${oratoreDati.cong})` : '';
+    // Logica corretta: se esiste imp.luogo e non è la parola "INTERNO" (case insensitive)
+    let infoCong = "";
+    if (imp.luogo && imp.luogo.trim().toUpperCase() !== "INTERNO") {
+        infoCong = `(${imp.luogo})`;
+    } else {
+        infoCong = "(Interno)";
+    }
 
     return `
-        <div style="font-weight:bold; font-size:14px;">#${imp.schemaNum} - ${s ? s.titolo : '?'}</div>
-        <div style="color:var(--btn-interni); font-size:13px;">
-            Oratore: ${imp.oratore}${congregazione}
+        <div style="font-weight:bold; font-size:18px; color:#1c1c1e; margin: 4px 0;">
+            ${imp.oratore} <span style="font-weight:normal; color:#666; font-size:13px;">${infoCong}</span>
+        </div>
+        <div style="font-size:14px; color:#3a3a3c;">
+            <strong>Schema ${imp.schemaNum}:</strong> ${titolo}
         </div>
     `;
 }
@@ -457,9 +518,8 @@
     const data = document.getElementById('assignDate').value;
     const orat = document.getElementById('assignOratore').value.trim();
     
-    // LEGGE IL LUOGO DALL'INPUT (Non più fisso)
+    // LEGGE IL LUOGO (Congregazione)
     let luogo = document.getElementById('assignLuogo').value.trim();
-    if (!luogo) luogo = "INTERNO"; 
     
     if(!data || !orat || !num) return alert("Dati mancanti (Data, Oratore o Numero Schema)");
 
@@ -474,8 +534,10 @@
     if(avvisi && !confirm("ATTENZIONE:\n" + avvisi + "\nProcedere?")) return;
 
     let ev = getEventi();
-    // Rimuove l'eventuale vecchio evento se stiamo facendo una modifica o sovrascrittura
-    const idx = ev.findIndex(e => e.data === data && (luogo === "INTERNO" || e.oratore === orat));
+    
+    // MODIFICA QUI: Rimuove l'evento esistente per quella data nella nostra congregazione
+    // (A prescindere che l'oratore sia lo stesso o meno, per evitare doppioni lo stesso giorno)
+    const idx = ev.findIndex(e => e.data === data && e.tipo === 'discorso');
     if(idx !== -1) ev.splice(idx, 1);
 
     ev.push({ 
@@ -483,7 +545,7 @@
         schemaNum: num, 
         data: data, 
         oratore: orat, 
-        luogo: luogo, 
+        luogo: luogo,  
         tipo: 'discorso' 
     });
     
@@ -491,7 +553,8 @@
     chiudiAssegnazione();
     renderSchemi();
     renderCalendario();
-    renderOratori(); // Aggiorna l'anteprima
+    renderOratori(); 
+    if(typeof renderEsterni === "function") renderEsterni(); // Aggiorna anche vista esterni se aperta
 }
 
         function verificaConflitti(nome, schema, data) {
@@ -571,12 +634,40 @@
             renderOratori();
         }
 
-        function renderOratori() {
+        function pulisciRicercaOratori() {
+    document.getElementById('searchOratore').value = '';
+    renderOratori();
+    document.getElementById('searchOratore').focus();
+}
+
+function renderOratori() {
     const container = document.getElementById('lista-oratori-render');
+    const counter = document.getElementById('counter-risultati');
+    const query = document.getElementById('searchOratore').value.toLowerCase();
     const oggi = new Date().toISOString().split('T')[0];
     const eventi = getEventi();
+    const tuttiSchemi = getSchemi();
     
-    container.innerHTML = getOratori().map(o => {
+    let oratoriFiltrati = getOratori();
+
+    // Filtro
+    if (query) {
+        oratoriFiltrati = oratoriFiltrati.filter(o => {
+            const nomeMatch = o.nome.toLowerCase().includes(query);
+            const schemiPosseduti = o.schemi.split(',').map(s => s.trim());
+            const numeroSchemaMatch = schemiPosseduti.some(n => n.includes(query));
+            const titoloSchemaMatch = schemiPosseduti.some(n => {
+                const sInfo = tuttiSchemi.find(s => s.num === n);
+                return sInfo && sInfo.titolo.toLowerCase().includes(query);
+            });
+            return nomeMatch || numeroSchemaMatch || titoloSchemaMatch;
+        });
+        counter.innerText = `Risultati trovati: ${oratoriFiltrati.length}`;
+    } else {
+        counter.innerText = "";
+    }
+
+    container.innerHTML = oratoriFiltrati.map(o => {
         const impegniFuturi = eventi
             .filter(e => e.oratore === o.nome && e.data >= oggi)
             .sort((a,b) => new Date(a.data) - new Date(b.data));
@@ -597,23 +688,34 @@
             previewHtml = `<div id="preview-${o.id}" class="preview-box" style="display:none; color:#999; padding:10px;">Nessun impegno futuro.</div>`;
         }
 
+        // Determiniamo se la query è un numero per passarla all'assegnazione veloce
+        const schemaSuggerito = (query && !isNaN(query)) ? query : "";
+
         return `
         <div class="card" style="padding:15px; border-left: 5px solid var(--btn-interni);">
             <div style="display:flex; justify-content:space-between; align-items:start;">
                 <div>
-                    <strong class="clickable-name" onclick="apriAssegnazioneVeloce('${o.nome}')">${o.nome}</strong><br>
-                    <small>${o.cong} ${o.tel ? '• '+o.tel : ''}</small>
+                    <strong class="clickable-name" onclick="apriAssegnazioneVeloce('${o.nome.replace(/'/g, "\\'")}', 'INTERNO', '${schemaSuggerito}')">${o.nome}</strong><br>
+                    <small>${o.cong} ${o.tel ? '• '+o.tel : ''}</small><br>
+                    <small style="color:#555; font-size:11px;">
+                        Schemi: ${o.schemi ? o.schemi.split(',').map(s => {
+                            const n = s.trim();
+                            // Applica evidenziazione gialla se il numero corrisponde alla ricerca
+                            const highlight = (query && n === query) ? 'style="background:yellow; font-weight:bold; padding:0 2px; border-radius:3px;"' : '';
+                            return `<span ${highlight}>${n}</span>`;
+                        }).join(', ') : 'Nessuno'}
+                    </small>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="caricaOratore(${o.id})" style="border:none; background:none; font-size:18px;">✏️</button>
-                    <button onclick="eliminaOratore(${o.id})" style="border:none; background:none; color:red; font-size:18px;">✕</button>
+                    <button onclick="caricaOratore(${o.id})" style="border:none; background:none; font-size:18px; cursor:pointer;">✏️</button>
+                    <button onclick="eliminaOratore(${o.id})" style="border:none; background:none; color:red; font-size:18px; cursor:pointer;">✕</button>
                 </div>
             </div>
             <div style="margin-top:10px;">
-                <button class="btn-backup" style="color:var(--btn-interni); padding:0;" onclick="toggleAnteprima(${o.id})">👁️ Mostra/Nascondi Anteprima</button>
+                <button class="btn-backup" style="color:var(--btn-interni); padding:0; cursor:pointer;" onclick="toggleAnteprima(${o.id})">👁️ Mostra/Nascondi Anteprima</button>
             </div>
             ${previewHtml}
-            <button class="btn-backup" style="color:var(--btn-calendario); margin-top:10px; width:100%; text-align:left; padding:0;" onclick="generaPDFOratore(${o.id})">📄 SCARICA PDF</button>
+            <button class="btn-backup" style="color:var(--btn-calendario); margin-top:10px; width:100%; text-align:left; padding:0; cursor:pointer;" onclick="generaPDFOratore(${o.id})">📄 SCARICA PDF</button>
         </div>`;
     }).join('');
 }
@@ -638,14 +740,37 @@ function apriModificaAppuntamento(idEvento) {
 
     document.getElementById('view-assegna').style.display = 'flex';
 }
-        function apriAssegnazioneVeloce(nome) {
-            document.getElementById('assignOratore').value = nome;
-            document.getElementById('assignNum').value = "";
-            document.getElementById('assignTitle').innerText = `Assegna per ${nome}`;
-            document.getElementById('labelSchemaInput').style.display = 'block';
-            document.getElementById('assignNumManuale').style.display = 'block';
-            document.getElementById('view-assegna').style.display = 'flex';
-        }
+        function apriAssegnazioneVeloce(nome, congregazione, schema) {
+    // 1. Inserisce i dati dell'oratore e del luogo
+    document.getElementById('assignOratore').value = nome;
+    document.getElementById('assignLuogo').value = congregazione || "INTERNO";
+
+    // 2. Gestione dello Schema (Numerico e Manuale)
+    const campoSchemaSelect = document.getElementById('assignNum');
+    const campoSchemaManuale = document.getElementById('assignNumManuale');
+    const labelSchema = document.getElementById('labelSchemaInput'); // Il contenitore del campo manuale
+
+    if (schema) {
+        campoSchemaSelect.value = schema;
+        campoSchemaManuale.value = schema;
+    } else {
+        campoSchemaSelect.value = "";
+        campoSchemaManuale.value = "";
+    }
+
+    // IMPORTANTE: Assicurati che i campi siano VISIBILI
+    // In alcuni script questi campi vengono nascosti se non resettati
+    if (campoSchemaSelect) campoSchemaSelect.style.display = 'block';
+    if (campoSchemaManuale) campoSchemaManuale.style.display = 'block';
+    if (labelSchema) labelSchema.style.display = 'block';
+
+    // 3. Resetta data e titolo della modale
+    document.getElementById('assignDate').value = "";
+    document.getElementById('assignTitle').innerText = `Assegna per ${nome}`;
+    
+    // 4. Mostra la vista di assegnazione
+    document.getElementById('view-assegna').style.display = 'flex';
+}
 
         function caricaOratore(id) {
             const o = getOratori().find(i => i.id === id);
@@ -754,6 +879,208 @@ function toggleAnteprima(id) {
     } else {
         el.style.display = "none";
     }
+}
+
+function getOratoriEsterni() { return JSON.parse(localStorage.getItem('oratori_esterni')) || []; }
+
+let esternoInModifica = null;
+function salvaOratoreEsterno() {
+    const nome = document.getElementById('extNome').value.trim();
+    const cong = document.getElementById('extCong').value.trim();
+    if(!nome || !cong) return alert("Nome e Congregazione obbligatori");
+
+    let oratori = getOratoriEsterni();
+    const dati = {
+        id: esternoInModifica || Date.now(),
+        nome,
+        cong,
+        tel: document.getElementById('extTel').value,
+        schemi: document.getElementById('extSchemi').value,
+        note: document.getElementById('extNote').value
+    };
+
+    if(esternoInModifica) {
+        const idx = oratori.findIndex(o => o.id === esternoInModifica);
+        oratori[idx] = dati;
+        esternoInModifica = null;
+        document.getElementById('btnSalvaEsterno').innerText = "AGGIUNGI ORATORE ESTERNO";
+    } else { oratori.push(dati); }
+
+    localStorage.setItem('oratori_esterni', JSON.stringify(oratori));
+    ['extNome', 'extCong', 'extTel', 'extSchemi', 'extNote'].forEach(id => document.getElementById(id).value = '');
+    renderEsterni();
+}
+
+function renderEsterni() {
+    const container = document.getElementById('lista-esterni-render');
+    const counter = document.getElementById('counter-risultati-ext');
+    const query = document.getElementById('searchEsterno').value.toLowerCase();
+    const oratori = getOratoriEsterni();
+    const tuttiSchemi = getSchemi(); 
+    
+    let totaleTrovati = 0;
+
+    // 1. Raggruppamento e Filtro Logico
+    const gruppi = oratori.reduce((acc, orat) => {
+        const nomeMatch = orat.nome.toLowerCase().includes(query);
+        const congMatch = orat.cong.toLowerCase().includes(query);
+        const schemiArray = orat.schemi.split(',').map(s => s.trim());
+        
+        // Verifica se il numero dello schema corrisponde alla ricerca
+        const numeroSchemaMatch = schemiArray.some(n => n.includes(query));
+        
+        // Verifica se il titolo dello schema corrispondente contiene la ricerca
+        const titoloSchemaMatch = schemiArray.some(n => {
+            const sInfo = tuttiSchemi.find(s => s.num === n);
+            return sInfo && sInfo.titolo.toLowerCase().includes(query);
+        });
+
+        if (!query || nomeMatch || congMatch || numeroSchemaMatch || titoloSchemaMatch) {
+            if (!acc[orat.cong]) acc[orat.cong] = [];
+            acc[orat.cong].push(orat);
+            totaleTrovati++;
+        }
+        return acc;
+    }, {});
+
+    // 2. Aggiorna il contatore dei risultati
+    if (query) {
+        counter.innerHTML = `<span style="color:var(--btn-esterni)">Risultati trovati: ${totaleTrovati}</span>`;
+    } else {
+        counter.innerText = "";
+    }
+
+    // 3. Generazione HTML
+    let html = "";
+    const congregazioniOrdinate = Object.keys(gruppi).sort();
+
+    congregazioniOrdinate.forEach(cong => {
+        // Se c'è una ricerca, le cartelle sono aperte di default (block), altrimenti chiuse (none)
+        const displayStato = query ? 'block' : 'none';
+        const idCong = `cong-${cong.replace(/\s+/g, '')}`;
+
+        html += `
+        <div class="card" style="border-left: 5px solid var(--btn-esterni); margin-bottom:10px;">
+            <div onclick="toggleDettagliEsterni('${cong}')" style="padding:15px; cursor:pointer; background:#f8f9fa; display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:var(--btn-esterni); text-transform:uppercase; font-size:14px;">${cong}</strong>
+                <span style="font-size:11px; background:#e5e5ea; padding:2px 8px; border-radius:10px; color:#3a3a3c;">${gruppi[cong].length} oratori</span>
+            </div>
+            
+            <div id="${idCong}" style="display:${displayStato}; padding:5px 10px; border-top:1px solid #eee; background:white;">
+                ${gruppi[cong].map(o => {
+                    // Se la query è un numero, la passiamo come suggerimento per lo schema
+                    const schemaSuggerito = isNaN(query) || query === "" ? "" : query;
+                    
+                    return `
+                    <div style="padding:12px 0; border-bottom:1px solid #f2f2f7; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="flex:1; padding-right:10px;">
+                            <div style="font-weight:bold; color:var(--btn-interni); font-size:16px; cursor:pointer;" 
+                                 onclick="apriAssegnazioneVeloce('${o.nome.replace(/'/g, "\\'")}', '${o.cong.replace(/'/g, "\\'")}', '${schemaSuggerito}')">
+                                 ${o.nome}
+                            </div>
+                            <div style="font-size:12px; color:#666; margin-top:2px;">
+                                <a href="tel:${o.tel}" style="text-decoration:none; color:inherit;">📞 ${o.tel || 'No tel'}</a>
+                            </div>
+                            <div style="font-size:12px; color:#3a3a3c; margin-top:5px; line-height:1.4;">
+                                <strong>Schemi:</strong> ${o.schemi.split(',').map(s => {
+                                    const n = s.trim();
+                                    const m = (query && n === query) ? `style="background:yellow; font-weight:bold; padding:0 2px;"` : '';
+                                    return `<span ${m}>${n}</span>`;
+                                }).join(', ')}
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:15px;">
+                            <button onclick="caricaEsterno(${o.id})" style="border:none; background:none; font-size:18px; cursor:pointer;">✏️</button>
+                            <button onclick="eliminaEsterno(${o.id})" style="border:none; background:none; color:#ff3b30; font-size:18px; cursor:pointer;">✕</button>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html || '<p style="text-align:center; color:#8e8e93; margin-top:30px;">Nessun oratore esterno trovato.</p>';
+}
+
+// Funzione di supporto per aprire/chiudere le congregazioni
+function toggleDettagliEsterni(cong) {
+    const id = `cong-${cong.replace(/\s+/g, '')}`;
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
+}
+
+function caricaEsterno(id) {
+    const o = getOratoriEsterni().find(i => i.id === id);
+    document.getElementById('extNome').value = o.nome;
+    document.getElementById('extCong').value = o.cong;
+    document.getElementById('extTel').value = o.tel;
+    document.getElementById('extSchemi').value = o.schemi;
+    document.getElementById('extNote').value = o.note;
+    esternoInModifica = id;
+    document.getElementById('btnSalvaEsterno').innerText = "MODIFICA ESTERNO";
+    window.scrollTo(0,0);
+}
+
+function eliminaEsterno(id) {
+    if(confirm("Eliminare oratore esterno?")) {
+        let oratori = getOratoriEsterni().filter(o => o.id !== id);
+        localStorage.setItem('oratori_esterni', JSON.stringify(oratori));
+        renderEsterni();
+    }
+}
+
+function exportEsterniCSV() {
+    const oratori = getOratoriEsterni();
+    if (oratori.length === 0) return alert("Nessun dato da esportare");
+    
+    let csv = "Nome;Congregazione;Telefono;Schemi;Note\n" + 
+        oratori.map(o => `"${o.nome}";"${o.cong}";"${o.tel}";"${o.schemi}";"${o.note}"`).join("\n");
+    
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "oratori_esterni.csv";
+    a.click();
+}
+
+function importEsterniCSV(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const rows = ev.target.result.split("\n").slice(1); // Salta l'intestazione
+        let oratori = getOratoriEsterni();
+        
+        rows.forEach(r => {
+            if (r.trim() === "") return;
+            const cols = r.split(";").map(c => c.replace(/"/g, '').trim());
+            if(cols[0] && cols[1]) { // Nome e Congregazione sono necessari
+                oratori.push({ 
+                    id: Date.now() + Math.random(), 
+                    nome: cols[0], 
+                    cong: cols[1], 
+                    tel: cols[2] || '', 
+                    schemi: cols[3] || '', 
+                    note: cols[4] || '' 
+                });
+            }
+        });
+        
+        localStorage.setItem('oratori_esterni', JSON.stringify(oratori));
+        renderEsterni();
+        alert("Importazione completata!");
+        e.target.value = ''; // Reset input file
+    };
+    reader.readAsText(file);
+}
+
+function pulisciRicercaEsterni() {
+    document.getElementById('searchEsterno').value = ''; // Pulisce il campo
+    renderEsterni(); // Ricarica la lista completa
+    document.getElementById('searchEsterno').focus(); // Riporta il focus sull'input
 }
 
     </script>
