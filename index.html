@@ -4,19 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Discorsi Pubblici Management</title>
-
-    <meta property="og:type" content="website">
-<meta property="og:url" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/">
-<meta property="og:title" content="Discorsi Pubblici Management">
-<meta property="og:description" content="Gestione efficiente dei discorsi pubblici.">
-<meta property="og:image" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/icona-512.png">
-
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/">
-<meta property="twitter:title" content="Discorsi Pubblici Management">
-<meta property="twitter:description" content="Gestione efficiente dei discorsi pubblici.">
-<meta property="twitter:image" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/icona-512.png">
     
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/">
+    <meta property="og:title" content="Discorsi Pubblici Management">
+    <meta property="og:description" content="Gestione efficiente dei discorsi pubblici.">
+    <meta property="og:image" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/icona-512.png">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/">
+    <meta property="twitter:title" content="Discorsi Pubblici Management">
+    <meta property="twitter:description" content="Gestione efficiente dei discorsi pubblici.">
+    <meta property="twitter:image" content="https://asarritzu-boop.github.io/Discorsi_Pubblici/icona-512.png">
+
     <meta name="theme-color" content="#f2f2f7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -45,7 +44,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Header e Tasto Condividi */
         .header {
             width: 100%;
             padding: 40px 0 20px;
@@ -57,8 +55,8 @@
 
         .share-btn {
             position: absolute;
-            top: 20px; /* Posizionato in alto */
-            right: 20px; /* Distanziato dal bordo */
+            top: 20px;
+            right: 20px;
             width: 36px;
             height: 36px;
             background: rgba(0,0,0,0.06);
@@ -68,7 +66,6 @@
             justify-content: center;
             cursor: pointer;
             border: none;
-            font-size: 18px;
             color: #007aff;
         }
 
@@ -89,7 +86,6 @@
             margin: 0;
         }
 
-        /* Menu Bottoni Colorati */
         .menu-container {
             width: 90%;
             max-width: 380px;
@@ -106,27 +102,21 @@
             font-size: 15px;
             font-weight: 600;
             color: var(--text-light);
-            text-align: center; /* Testo centrato */
+            text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
             transition: transform 0.1s ease;
+            cursor: pointer;
         }
 
-        .btn:active {
-            transform: scale(0.97);
-            opacity: 0.9;
-        }
-
-        /* Colori Specifici */
+        .btn:active { transform: scale(0.97); opacity: 0.9; }
         .btn-calendario { background-color: var(--btn-calendario); }
         .btn-schemi     { background-color: var(--btn-schemi); }
         .btn-esterni    { background-color: var(--btn-esterni); }
         .btn-interni    { background-color: var(--btn-interni); }
 
-        /* Footer Backup */
         .footer-menu {
             margin-top: auto;
-            padding-top: 30px;
-            padding-bottom: 40px;
+            padding: 30px 0 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -141,34 +131,211 @@
             font-size: 13px;
             font-weight: 500;
             padding: 8px;
-            text-decoration: none;
             text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .view-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ios-bg);
+            z-index: 100;
+            overflow-y: auto;
+            padding: env(safe-area-inset-top) 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        input, select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .modal-container {
+            background: rgba(0,0,0,0.4);
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="share-btn" onclick="shareApp()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-        </button>
-        <img src="icona-192.png" alt="App Icon" class="app-icon">
-        <h1>Discorsi Pubblici Management</h1>
+    <div id="main-menu" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <div class="header">
+            <button class="share-btn" onclick="shareApp()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+            </button>
+            <img src="icona-192.png" alt="App Icon" class="app-icon">
+            <h1>Discorsi Pubblici Management</h1>
+        </div>
+
+        <div class="menu-container">
+            <button class="btn btn-calendario" onclick="toggleView('calendario')">CALENDARIO</button>
+            <button class="btn btn-schemi" onclick="toggleView('schemi')">ELENCO SCHEMI</button>
+            <button class="btn btn-esterni">ORATORI ESTERNI</button>
+            <button class="btn btn-interni">ORATORI INTERNI</button>
+        </div>
+
+        <div class="footer-menu">
+            <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importData(event)">
+            <button class="btn-backup" onclick="document.getElementById('fileInput').click()">Importa Backup</button>
+            <button class="btn-backup" onclick="exportData()">Esporta Backup</button>
+        </div>
     </div>
 
-    <div class="menu-container">
-        <button class="btn btn-calendario">CALENDARIO</button>
-        <button class="btn btn-schemi">ELENCO SCHEMI</button>
-        <button class="btn btn-esterni">ORATORI ESTERNI</button>
-        <button class="btn btn-interni">ORATORI INTERNI</button>
+    <div id="view-schemi" class="view-overlay">
+        <div style="width:90%; max-width:450px; margin:auto; padding: 20px 0;">
+            <button class="btn-backup" onclick="toggleView('main')">‹ Indietro</button>
+            <h2 style="text-align:center;">Gestione Schemi</h2>
+
+            <div class="input-group">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="number" id="schemaNum" placeholder="N°" style="width:25%;">
+                    <input type="text" id="schemaTitolo" placeholder="Titolo Discorso" style="flex:1;">
+                </div>
+                <button class="btn btn-schemi" onclick="salvaSchema()" style="width:100%; padding: 12px; font-size: 14px;">SALVA / MODIFICA SCHEMA</button>
+                
+                <div style="display:flex; justify-content:space-between; margin-top:15px; flex-wrap: wrap;">
+                    <button class="btn-backup" style="color:var(--btn-interni)" onclick="document.getElementById('csvInput').click()">Importa CSV</button>
+                    <button class="btn-backup" style="color:var(--btn-interni)" onclick="downloadS99()">S-99</button>
+                    <button class="btn-backup" style="color:var(--btn-interni)" onclick="exportCSV()">Esporta CSV</button>
+                    <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="importCSV(event)">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="searchSchema" placeholder="Cerca numero o titolo..." oninput="renderSchemi()" style="width:100%; box-sizing:border-box; margin-bottom:10px;">
+                <div style="display:flex; gap:10px; align-items:center; font-size:12px; color:#666; margin-bottom:10px;">
+                    <span>Non pronunciati da almeno</span>
+                    <input type="number" id="filterAnni" value="0" min="0" onchange="renderSchemi()" style="width:45px;">
+                    <span>anni</span>
+                </div>
+                <select id="sortOrder" onchange="renderSchemi()" style="width:100%;">
+                    <option value="num_asc">Ordina per: Numero ↑</option>
+                    <option value="date_asc">Data: Più Lontani (o mai fatti) ↑</option>
+                    <option value="date_desc">Data: Più Recenti ↓</option>
+                </select>
+            </div>
+
+            <div id="lista-schemi-render"></div>
+        </div>
     </div>
 
-    <div class="footer-menu">
-        <button class="btn-backup" onclick="alert('Funzione Importa non ancora attiva')">Importa Backup</button>
-        <button class="btn-backup" onclick="exportData()">Esporta Backup</button>
+    <div id="view-calendario" class="view-overlay">
+        <div style="width:95%; max-width:500px; margin:auto; padding: 20px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <button class="btn-backup" onclick="toggleView('main')">‹ Home</button>
+                <button class="btn-backup" style="color:var(--btn-calendario)" onclick="apriModalEvento()">+ AGGIUNGI EVENTO</button>
+            </div>
+
+            <div style="text-align:center; margin-bottom:15px; font-size:13px; color:#3a3a3c;">
+                <strong>Giorno dell'adunanza:</strong>
+                <select id="giornoAdunanza" onchange="salvaGiornoAdunanza()" style="margin-left:5px; padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-weight:600;">
+                    <option value="0">Domenica</option>
+                    <option value="6">Sabato</option>
+                </select>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <button onclick="cambiaMese(-1)" style="background:none; border:none; font-size:24px; color:var(--btn-calendario);">‹</button>
+                <h3 id="meseCorrenteTitolo" style="margin:0; text-transform: capitalize;">Mese Anno</h3>
+                <button onclick="cambiaMese(1)" style="background:none; border:none; font-size:24px; color:var(--btn-calendario);">›</button>
+            </div>
+
+            <div id="calendario-render"></div>
+        </div>
+    </div>
+
+    <div id="view-assegna" class="modal-container">
+        <div style="background:white; width:90%; max-width:400px; padding:25px; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <h3 id="assignTitle" style="margin-top:0; color:var(--btn-schemi);">Assegna Schema</h3>
+            <input type="hidden" id="assignNum">
+            
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:5px;">Data Discorso</label>
+            <input type="date" id="assignDate" style="width:100%; margin-bottom:15px; box-sizing:border-box;">
+
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:5px;">Nome Oratore</label>
+            <input type="text" id="assignOratore" placeholder="Nome Oratore" style="width:100%; margin-bottom:20px; box-sizing:border-box;">
+
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1; background:#8e8e93;" onclick="chiudiAssegnazione()">Annulla</button>
+                <button class="btn btn-schemi" style="flex:1;" onclick="confermaAssegnazione()">Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-evento" class="modal-container">
+        <div style="background:white; width:90%; max-width:400px; padding:25px; border-radius:20px;">
+            <h3 style="margin-top:0;">Programma Evento</h3>
+            <input type="date" id="eventDate" style="width:100%; margin-bottom:15px; box-sizing:border-box;">
+            <select id="eventType" style="width:100%; margin-bottom:20px;">
+                <option value="Assemblea">Assemblea</option>
+                <option value="Congresso">Congresso</option>
+                <option value="Visita Viaggiante">Visita Viaggiante</option>
+                <option value="Discorso Speciale">Discorso Speciale</option>
+                <option value="Commemorazione">Commemorazione</option>
+            </select>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1; background:#8e8e93;" onclick="chiudiModalEvento()">Annulla</button>
+                <button class="btn btn-calendario" style="flex:1;" onclick="salvaEventoSpeciale()">Salva</button>
+            </div>
+        </div>
     </div>
 
     <script>
+        let dataVisualizzata = new Date(); // Mese corrente calendario
+
+        // Caricamento preferenza giorno adunanza (default 0 = Domenica)
+        let giornoAdunanzaScelto = localStorage.getItem('giornoAdunanza') ? parseInt(localStorage.getItem('giornoAdunanza')) : 0;
+        document.getElementById('giornoAdunanza').value = giornoAdunanzaScelto;
+
+        function salvaGiornoAdunanza() {
+            giornoAdunanzaScelto = parseInt(document.getElementById('giornoAdunanza').value);
+            localStorage.setItem('giornoAdunanza', giornoAdunanzaScelto);
+            renderCalendario();
+        }
+
+        function downloadS99() {
+            const link = document.createElement("a");
+            link.href = "https://asarritzu-boop.github.io/Discorsi_Pubblici/S-99.csv";
+            link.download = "S-99.csv";
+            link.click();
+        }
+
+        // --- LOGICA NAVIGAZIONE ---
+        function toggleView(view) {
+            document.getElementById('main-menu').style.display = (view === 'main') ? 'flex' : 'none';
+            document.getElementById('view-schemi').style.display = (view === 'schemi') ? 'block' : 'none';
+            document.getElementById('view-calendario').style.display = (view === 'calendario') ? 'block' : 'none';
+            if(view === 'schemi') renderSchemi();
+            if(view === 'calendario') renderCalendario();
+        }
+
+        // --- LOGICA CORE ---
         async function shareApp() {
             if (navigator.share) {
                 try {
@@ -178,9 +345,7 @@
                         url: window.location.href
                     });
                 } catch (err) { console.log(err); }
-            } else {
-                alert("Copia questo link: " + window.location.href);
-            }
+            } else { alert("Link: " + window.location.href); }
         }
 
         function exportData() {
@@ -193,9 +358,301 @@
             a.click();
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (confirm("Sovrascrivere tutti i dati con questo backup?")) {
+                        localStorage.clear();
+                        Object.keys(importedData).forEach(key => localStorage.setItem(key, importedData[key]));
+                        location.reload();
+                    }
+                } catch (err) { alert("File non valido"); }
+            };
+            reader.readAsText(file);
         }
+
+        // --- LOGICA SCHEMI ---
+        function getSchemi() { return JSON.parse(localStorage.getItem('schemi')) || []; }
+        function getEventi() { return JSON.parse(localStorage.getItem('eventi')) || []; }
+        
+        function getStoricoSchema(num) {
+            return getEventi().filter(e => e.schemaNum === num).sort((a,b) => new Date(b.data) - new Date(a.data));
+        }
+
+        function salvaSchema() {
+            const num = document.getElementById('schemaNum').value;
+            const titolo = document.getElementById('schemaTitolo').value;
+            if(!num || !titolo) return alert("Compila i campi");
+
+            let schemi = getSchemi();
+            const index = schemi.findIndex(s => s.num === num);
+            if(index > -1) schemi[index].titolo = titolo;
+            else schemi.push({ num, titolo, blacklist: false });
+
+            localStorage.setItem('schemi', JSON.stringify(schemi));
+            document.getElementById('schemaNum').value = '';
+            document.getElementById('schemaTitolo').value = '';
+            renderSchemi();
+        }
+
+        function toggleBlacklist(num) {
+            let schemi = getSchemi();
+            const index = schemi.findIndex(s => s.num === num);
+            schemi[index].blacklist = !schemi[index].blacklist;
+            localStorage.setItem('schemi', JSON.stringify(schemi));
+            renderSchemi();
+        }
+
+        // --- CALENDARIO ---
+        function cambiaMese(direzione) {
+            dataVisualizzata.setMonth(dataVisualizzata.getMonth() + direzione);
+            renderCalendario();
+        }
+
+           function renderCalendario() {
+    const container = document.getElementById('calendario-render');
+    const titolo = document.getElementById('meseCorrenteTitolo');
+    titolo.innerText = dataVisualizzata.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+
+    const anno = dataVisualizzata.getFullYear();
+    const mese = dataVisualizzata.getMonth();
+    const eventi = getEventi();
+    let html = '';
+
+        let dataCiclo = new Date(anno, mese, 1);
+    while (dataCiclo.getMonth() === mese) {
+        if (dataCiclo.getDay() === giornoAdunanzaScelto) {
+            // Usiamo il formato YYYY-MM-DD locale per il confronto
+            const dIso = dataCiclo.getFullYear() + '-' + 
+                         String(dataCiclo.getMonth() + 1).padStart(2, '0') + '-' + 
+                         String(dataCiclo.getDate()).padStart(2, '0');
+            
+            const eventi = getEventi();
+            const imp = eventi.find(e => e.data === dIso);
+
+            let azioneHtml = imp 
+                ? `<button onclick="eliminaEvento(${imp.id})" style="background:none; border:none; color:#ff3b30; font-size:22px;">✕</button>`
+                : `<button onclick="assegnaDaCalendario('${dIso}')" style="background:none; border:none; color:#007aff; font-size:28px;">+</button>`;
+
+            html += `
+            <div class="card" style="padding:15px; border-left: 6px solid ${imp ? (imp.tipo === 'speciale' ? '#ff3b30' : '#5856d6') : '#c7c7cc'}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="flex:1">
+                        <div style="font-size:12px; color:#8e8e93; text-transform:uppercase;">
+                            ${dataCiclo.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric' })}
+                        </div>
+                        ${renderContenutoGiorno(imp)}
+                    </div>
+                    <div>${azioneHtml}</div>
+                </div>
+            </div>`;
+        }
+        dataCiclo.setDate(dataCiclo.getDate() + 1);
+    }
+    
+    container.innerHTML = html || '<p style="text-align:center;">Nessun weekend disponibile.</p>';
+}
+
+function renderContenutoGiorno(imp) {
+    if(!imp) return '<div style="color:#c7c7cc; font-style:italic;">Disponibile</div>';
+    
+    if(imp.tipo === 'speciale') {
+        return `<div style="font-weight:bold; color:#ff3b30; font-size:16px;">${imp.nome.toUpperCase()}</div>`;
+    }
+    
+    const schemi = getSchemi();
+    const s = schemi.find(x => x.num === imp.schemaNum);
+    return `
+        <div style="font-weight:bold; font-size:15px;">#${imp.schemaNum} - ${s ? s.titolo : 'Titolo non trovato'}</div>
+        <div style="color:var(--btn-interni); font-size:14px;">Oratore: ${imp.oratore}</div>
+    `;
+}
+
+        // --- ASSEGNAZIONE & EVENTI ---
+        function assegnaDaCalendario(data) {
+    document.getElementById('assignDate').value = data;
+    toggleView('schemi');
+    alert("Seleziona lo schema desiderato dalla lista.");
+}
+
+        function apriAssegnazione(num) {
+    const s = getSchemi().find(x => x.num === num);
+    if(s.blacklist && !confirm("ATTENZIONE: Schema in Blacklist. Continuare?")) return;
+
+    // CONTROLLO BLOCCO PER EVENTO SPECIALE
+    const dataScelta = document.getElementById('assignDate').value;
+    if (dataScelta) {
+        const eventi = getEventi();
+        const impegnoInData = eventi.find(e => e.data === dataScelta);
+        
+        if (impegnoInData && impegnoInData.tipo === 'speciale') {
+            alert(`AZIONE NEGATA: Il ${new Date(dataScelta).toLocaleDateString()} è presente un evento speciale (${impegnoInData.nome}). Elimina l'evento dal calendario per procedere.`);
+            return;
+        }
+    }
+
+    document.getElementById('assignNum').value = num;
+    document.getElementById('assignTitle').innerText = `Assegna #${num} - ${s.titolo}`;
+    document.getElementById('view-assegna').style.display = 'flex';
+}
+
+        function chiudiAssegnazione() { 
+            document.getElementById('view-assegna').style.display = 'none';
+            document.getElementById('assignOratore').value = '';
+        }
+
+        function confermaAssegnazione() {
+    const num = document.getElementById('assignNum').value;
+    const data = document.getElementById('assignDate').value;
+    const orat = document.getElementById('assignOratore').value;
+    if(!data || !orat) return alert("Dati mancanti");
+
+    let ev = getEventi();
+    const indiceEsistente = ev.findIndex(e => e.data === data);
+
+    if (indiceEsistente !== -1) {
+        if (!confirm("In questa data è già assegnato un discorso. Vuoi sovrascriverlo?")) {
+            return;
+        }
+        ev.splice(indiceEsistente, 1); // Rimuove il vecchio discorso
+    }
+
+    ev.push({ id: Date.now(), schemaNum: num, data: data, oratore: orat, tipo: 'schema' });
+    localStorage.setItem('eventi', JSON.stringify(ev));
+    chiudiAssegnazione();
+    renderSchemi();
+    alert("Discorso assegnato con successo!");
+}
+
+        function apriModalEvento() { document.getElementById('modal-evento').style.display = 'flex'; }
+        function chiudiModalEvento() { document.getElementById('modal-evento').style.display = 'none'; }
+
+        function salvaEventoSpeciale() {
+    const d = document.getElementById('eventDate').value;
+    const t = document.getElementById('eventType').value;
+    
+    if(!d) return alert("Scegli una data");
+
+    let ev = getEventi();
+    const indiceEsistente = ev.findIndex(e => e.data === d);
+
+    if (indiceEsistente !== -1) {
+        if (!confirm("In questa data è già presente un impegno. Vuoi sovrascriverlo con l'evento speciale?")) {
+            return;
+        }
+        ev.splice(indiceEsistente, 1);
+    }
+
+    ev.push({ id: Date.now(), data: d, tipo: 'speciale', nome: t });
+    localStorage.setItem('eventi', JSON.stringify(ev));
+    
+    chiudiModalEvento();
+    document.getElementById('eventDate').value = ''; 
+    renderCalendario();
+    alert("Evento speciale salvato!");
+}
+
+        function eliminaEvento(id) {
+            if(confirm("Eliminare questo impegno?")) {
+                let ev = getEventi().filter(e => e.id !== id);
+                localStorage.setItem('eventi', JSON.stringify(ev));
+                if(document.getElementById('view-calendario').style.display === 'block') renderCalendario();
+                else renderSchemi();
+            }
+        }
+
+        // --- CSV ---
+        function exportCSV() {
+            let csv = "Numero;Titolo\n";
+            getSchemi().forEach(s => csv += `${s.num};${s.titolo}\n`);
+            const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "schemi.csv";
+            link.click();
+        }
+
+        function importCSV(event) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const rows = e.target.result.split("\n").slice(1);
+                let schemi = getSchemi();
+                rows.forEach(row => {
+                    const [num, tit] = row.split(";");
+                    if(num && tit) {
+                        if(!schemi.some(s => s.num === num.trim())) 
+                            schemi.push({ num: num.trim(), titolo: tit.trim(), blacklist: false });
+                    }
+                });
+                localStorage.setItem('schemi', JSON.stringify(schemi));
+                renderSchemi();
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+
+        // --- RENDERING SCHEMI ---
+        function renderSchemi() {
+            const container = document.getElementById('lista-schemi-render');
+            const query = document.getElementById('searchSchema').value.toLowerCase();
+            const anniMin = parseInt(document.getElementById('filterAnni').value) || 0;
+            const sort = document.getElementById('sortOrder').value;
+
+            let schemi = getSchemi().map(s => {
+                const storico = getStoricoSchema(s.num);
+                return { ...s, ultimo: storico[0] || null, storico };
+            });
+
+            if(query) schemi = schemi.filter(s => s.num.includes(query) || s.titolo.toLowerCase().includes(query));
+            if(anniMin > 0) {
+                const limite = new Date(); limite.setFullYear(limite.getFullYear() - anniMin);
+                schemi = schemi.filter(s => !s.ultimo || new Date(s.ultimo.data) <= limite);
+            }
+
+            schemi.sort((a,b) => {
+                if(sort === 'num_asc') return a.num - b.num;
+                const dA = a.ultimo ? new Date(a.ultimo.data) : new Date(0);
+                const dB = b.ultimo ? new Date(b.ultimo.data) : new Date(0);
+                return sort === 'date_asc' ? dA - dB : dB - dA;
+            });
+
+            container.innerHTML = schemi.map(s => `
+                <div class="card" style="border-left: 5px solid ${s.blacklist ? '#ff3b30' : '#34c759'};">
+                    <div onclick="toggleDettagli('${s.num}')" style="padding:15px; cursor:pointer;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div style="flex:1">
+                                <span style="font-weight:bold; color:#007aff;">#${s.num}</span>
+                                <div style="font-size:15px; font-weight:600;">${s.titolo}</div>
+                                <div style="font-size:11px; color:#888; margin-top:4px;">
+                                    ${s.ultimo ? `Ultimo: ${new Date(s.ultimo.data).toLocaleDateString()} (${s.ultimo.oratore})` : 'Mai pronunciato'}
+                                </div>
+                            </div>
+                            <button onclick="event.stopPropagation(); toggleBlacklist('${s.num}')" style="background:none; border:none; font-size:20px;">
+                                ${s.blacklist ? '🚫' : '✅'}
+                            </button>
+                        </div>
+                    </div>
+                    <div id="details-${s.num}" style="display:none; padding:0 15px 15px; background:#f9f9f9; border-top:1px solid #eee; font-size:12px;">
+                        <p style="font-weight:bold; margin:10px 0 5px;">Storico assegnazioni:</p>
+                        ${s.storico.length ? s.storico.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span>${new Date(e.data).toLocaleDateString()} - ${e.oratore}</span>
+                            <button onclick="eliminaEvento(${e.id})" style="color:red; background:none; border:none; font-size:10px;">Elimina</button>
+                        </div>`).join('') : 'Nessuno storico'}
+                        <button class="btn btn-schemi" style="width:100%; margin-top:10px; padding:8px; font-size:12px;" onclick="apriAssegnazione('${s.num}')">+ ASSEGNA ORA</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleDettagli(num) {
+            const el = document.getElementById(`details-${num}`);
+            el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+        }
+
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
-</html>
+</html> 
