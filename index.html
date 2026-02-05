@@ -111,7 +111,8 @@
                 <button class="btn btn-schemi" onclick="salvaSchema()" style="width:100%;">SALVA / MODIFICA SCHEMA</button>
                 <div style="display:flex; justify-content:space-between; margin-top:15px; flex-wrap: wrap;">
                     <button class="btn-backup" style="color:var(--btn-interni)" onclick="document.getElementById('csvInput').click()">Importa CSV</button>
-                    <button class="btn-backup" style="color:var(--btn-interni)" onclick="downloadS99()">S-99</button>
+                    <button class="btn-backup" style="color:#ff3b30" onclick="downloadS99()">S-99</button>
+                    <button class="btn-backup" style="color:#ff3b30" onclick="generaPDFSchemiFiltrati()">Lista</button>
                     <button class="btn-backup" style="color:var(--btn-interni)" onclick="exportCSV()">Esporta CSV</button>
                     <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="importCSV(event)">
                 </div>
@@ -1098,7 +1099,60 @@ function pulisciRicercaEsterni() {
     renderEsterni(); // Ricarica la lista completa
     document.getElementById('searchEsterno').focus(); // Riporta il focus sull'input
 }
+async function generaPDFSchemiFiltrati() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Recupera i valori dei filtri attuali
+    const query = document.getElementById('searchSchema').value.toLowerCase();
+    const anniMin = parseInt(document.getElementById('filterAnni').value) || 0;
+    const sort = document.getElementById('sortOrder').value;
+    const eventi = getEventi();
 
+    // Applica la stessa logica di filtraggio di renderSchemi()
+    let schemi = getSchemi().map(s => {
+        const storico = eventi.filter(e => e.schemaNum === s.num).sort((a,b) => new Date(b.data) - new Date(a.data));
+        return { ...s, ultimo: storico[0] || null };
+    });
+
+    if(query) schemi = schemi.filter(s => s.num.includes(query) || s.titolo.toLowerCase().includes(query));
+    if(anniMin > 0) {
+        const limite = new Date(); limite.setFullYear(limite.getFullYear() - anniMin);
+        schemi = schemi.filter(s => !s.ultimo || new Date(s.ultimo.data) <= limite);
+    }
+
+    // Ordinamento
+    schemi.sort((a,b) => {
+        if(sort === 'num_asc') return a.num - b.num;
+        const dA = a.ultimo ? new Date(a.ultimo.data) : new Date(0);
+        const dB = b.ultimo ? new Date(b.ultimo.data) : new Date(0);
+        return sort === 'date_asc' ? dA - dB : dB - dA;
+    });
+
+    // Costruzione del PDF
+    doc.setFontSize(16);
+    doc.text("Elenco Schemi Discorsi", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Filtri: ${query || 'Nessuno'} | Anni: ${anniMin} | Ordine: ${sort}`, 14, 28);
+
+    const tableBody = schemi.map(s => [
+        s.num,
+        s.titolo,
+        s.ultimo ? new Date(s.ultimo.data).toLocaleDateString() : 'Mai pronunciato',
+        s.ultimo ? s.ultimo.oratore : '-'
+    ]);
+
+    doc.autoTable({
+        startY: 35,
+        head: [['N°', 'Titolo', 'Ultima Data', 'Oratore']],
+        body: tableBody,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [255, 149, 0] } // Colore arancione come il tuo pulsante schemi
+    });
+
+    doc.save("lista_schemi_filtrata.pdf");
+}
+        
     </script>
 </body>
 </html>
