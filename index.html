@@ -63,15 +63,89 @@
         .footer-menu { margin-top: auto; padding: 30px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
         .btn-backup { background: none; border: none; color: #8e8e93; font-size: 13px; font-weight: 500; padding: 8px; text-transform: uppercase; cursor: pointer; }
 
-        .view-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ios-bg); z-index: 100; overflow-y: auto; padding: env(safe-area-inset-top) 0; }
+
+/* Stile per il pulsante Indietro dentro la guida */
+.btn-back-guida {
+    display: inline-block;
+    margin: 20px;
+    padding: 10px 20px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
         .card { background: white; border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-left: 10px; margin-right: 10px; }
         .input-group { background: white; padding: 15px; border-radius: 15px; margin: 0 10px 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         input, select, textarea { padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; width: 100%; box-sizing: border-box; }
 
-        .modal-container { background: rgba(0,0,0,0.4); display: none; position: fixed; top:0; left:0; width:100%; height:100%; z-index: 200; align-items: center; justify-content: center; }
+        .modal-container { background: rgba(0,0,0,0.4); display: none; position: fixed; top:0; left:0; width:100%; height:100%; z-index: 10000; align-items: center; justify-content: center; }
         
         .clickable-name { color: var(--btn-interni); text-decoration: underline; cursor: pointer; }
         .preview-box { background: #f0f0f7; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 12px; border-left: 3px solid var(--btn-interni); }
+
+/* Stile per il contenitore della Guida */
+.view-overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white !important; /* Forza il bianco */
+    z-index: 9999 !important; 
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.help-btn { 
+    position: absolute; top: 20px; left: 20px; 
+    width: 36px; height: 36px; 
+    background: var(--btn-calendario); 
+    border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    cursor: pointer; border: none; color: white; 
+    font-weight: bold; font-size: 20px; 
+    z-index: 10;
+}
+
+.guida-content {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+.guida-section {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.btn-back-guida {
+    background: #eee;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+.guida-section h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-left: 4px solid var(--btn-calendario);
+    padding-left: 10px;
+}
+.guida-section ul {
+    padding-left: 20px;
+}
+.guida-section li {
+    margin-bottom: 8px;
+}
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -80,6 +154,7 @@
 
     <div id="main-menu" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
         <div class="header">
+<button class="help-btn" onclick="toggleView('guida')">?</button>
             <button class="share-btn" onclick="shareApp()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
             </button>
@@ -275,24 +350,128 @@
                 <button class="btn btn-calendario" style="flex:1;" onclick="salvaEventoSpeciale()">Salva</button>
             </div>
         </div>
-    </div>
+</div>
 
-    <script>
+<div id="view-guida" class="view-overlay">
+    <div style="max-width:800px; margin:auto; padding-bottom: 40px;">
+        <button class="btn-back-guida" onclick="toggleView('main')">‹ Torna alla Home</button>
+        
+        <h2 style="text-align:center; color: var(--btn-interni); margin-bottom:20px;">Guida all'Utilizzo</h2>
+        
+        <div class="guida-content">
+            
+            <div class="guida-section">
+                <h3>📱 Menu Principale (Home)</h3>
+                <p>Il punto di partenza dell'applicazione.</p>
+                <ul>
+                    <li><strong>Icona Condividi (alto a destra):</strong> Permette di condividere l'URL dell'app tramite le opzioni di sistema.</li>
+                    <li><strong>CALENDARIO:</strong> Gestione cronologica degli impegni.</li>
+                    <li><strong>ELENCO SCHEMI:</strong> Database dei discorsi e cronologia.</li>
+                    <li><strong>ORATORI ESTERNI:</strong> Gestione fratelli di altre congregazioni.</li>
+                    <li><strong>ORATORI INTERNI:</strong> Gestione oratori locali e schemi personali.</li>
+                    <li><strong>Importa Backup:</strong> Carica un file .json per ripristinare i dati.</li>
+                    <li><strong>Esporta Backup:</strong> Scarica il database attuale in formato .json.</li>
+                </ul>
+            </div>
+
+            <div class="guida-section">
+                <h3>🗓️ Calendario</h3>
+                <p>Visualizzazione e programmazione appuntamenti.</p>
+                <ul>
+                    <li><strong>Giorno adunanza:</strong> Seleziona Sabato o Domenica per evidenziare i weekend corretti.</li>
+                    <li><strong>Frecce ‹ e ›:</strong> Naviga tra i mesi dell'anno.</li>
+                    <li><strong>+ AGGIUNGI EVENTO:</strong> Inserisce eventi speciali (Assemblee, Congressi, Visita) che bloccano la data in rosso.</li>
+                    <li><strong>Pulsante + (nel giorno):</strong> Apre la finestra di assegnazione per quella data specifica.</li>
+                    <li><strong>Pulsante ✕ (nel giorno):</strong> Elimina l'impegno o l'evento programmato.</li>
+                </ul>
+            </div>
+
+            <div class="guida-section">
+                <h3>📚 Gestione Schemi</h3>
+                <p>Database di tutti i discorsi pubblici (S-34).</p>
+                <ul>
+                    <li><strong>N° e Titolo:</strong> Inserimento o modifica manuale.</li>
+                    <li><strong>Importa CSV:</strong> Carica massivamente gli schemi da Excel.</li>
+                    <li><strong>S-99:</strong> Scarica l'elenco predefinito CSV da importare.</li>
+                    <li><strong>Lista PDF:</strong> Genera documento basato sui filtri attivi.</li>
+                    <li><strong>Filtro Anni:</strong> Trova schemi non presentati da molto tempo.</li>
+                    <li><strong>Icona 🚫/✅:</strong> Gestione Blacklist (impedisce l'uso di schemi sospesi dalla filiale).</li>
+                    <li><strong>Dettagli:</strong> Clicca sullo schema per vedere lo storico e chi lo ha pronunciato.</li>
+                </ul>
+            </div>
+
+            <div class="guida-section">
+                <h3>👥 Oratori (Interni ed Esterni)</h3>
+                <ul>
+                    <li><strong>Dati Anagrafici:</strong> Nome, Congregazione, Telefono e Note.</li>
+                    <li><strong>Numeri schemi:</strong> Inserisci i numeri dei discorsi pronti (separati da virgola).</li>
+                    <li><strong>Cerca:</strong> Filtra per nome, numero schema o titolo del discorso.</li>
+                    <li><strong>Pulsante ✏️:</strong> Modifica i dati dell'oratore.</li>
+                    <li><strong>Pulsante 👁️:</strong> Mostra l'anteprima degli impegni futuri dell'oratore.</li>
+                    <li><strong>📄 SCARICA PDF:</strong> Crea il programma individuale da inviare agli oratori.</li>
+                    <li><strong>Assegnazione Veloce:</strong> Clicca sul nome per assegnare subito un discorso.</li>
+                </ul>
+            </div>
+
+            <div class="guida-section">
+                <h3>✍️ Finestra di Assegnazione (Modal)</h3>
+                <ul>
+                    <li><strong>Nome Oratore:</strong> Suggerimenti automatici con auto-completamento del luogo.</li>
+                    <li><strong>Luogo:</strong> Di default impostato su "INTERNO".</li>
+                    <li><strong>Verifica Conflitti:</strong> L'app segnala automaticamente se:
+                        <ul>
+                            <li>L'oratore ha parlato negli ultimi 3 mesi.</li>
+                            <li>L'oratore ha già un impegno nel mese.</li>
+                            <li>Lo schema è già stato presentato in passato o è in Blacklist.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+   <script>
         let dataVisualizzata = new Date();
         let giornoAdunanzaScelto = localStorage.getItem('giornoAdunanza') ? parseInt(localStorage.getItem('giornoAdunanza')) : 0;
         document.getElementById('giornoAdunanza').value = giornoAdunanzaScelto;
 
         function toggleView(view) {
-    document.getElementById('main-menu').style.display = (view === 'main') ? 'flex' : 'none';
-    document.getElementById('view-schemi').style.display = (view === 'schemi') ? 'block' : 'none';
-    document.getElementById('view-calendario').style.display = (view === 'calendario') ? 'block' : 'none';
-    document.getElementById('view-interni').style.display = (view === 'interni') ? 'block' : 'none';
-    document.getElementById('view-esterni').style.display = (view === 'esterni') ? 'block' : 'none'; // Aggiunto
-    
-    if(view === 'schemi') renderSchemi();
-    if(view === 'calendario') renderCalendario();
-    if(view === 'interni') renderOratori();
-    if(view === 'esterni') renderEsterni(); // Aggiunto
+    const allViews = ['main-menu', 'view-schemi', 'view-calendario', 'view-interni', 'view-esterni', 'view-guida'];
+
+    // 1. Nascondi tutto e resetta
+    allViews.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = 'none';
+            el.style.setProperty('display', 'none', 'important');
+        }
+    });
+
+    // 2. Mostra la vista selezionata
+    if (view === 'main') {
+        const menu = document.getElementById('main-menu');
+        if (menu) menu.style.setProperty('display', 'flex', 'important');
+    } else {
+        const targetId = (view.startsWith('view-')) ? view : 'view-' + view;
+        const targetEl = document.getElementById(targetId);
+        
+        if (targetEl) {
+            // Forza la visibilità totale
+            targetEl.style.setProperty('display', 'block', 'important');
+            targetEl.style.visibility = 'visible';
+            targetEl.style.opacity = '1';
+            targetEl.scrollTop = 0;
+        }
+    }
+
+    // 3. Esegui i render dei dati
+    if (view === 'schemi') renderSchemi();
+    if (view === 'calendario') renderCalendario();
+    if (view === 'interni') renderOratori();
+    if (view === 'esterni') renderEsterni();
 }
 
         function getSchemi() { return JSON.parse(localStorage.getItem('schemi')) || []; }
