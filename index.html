@@ -124,14 +124,22 @@
     text-align: left;
 }
 
+/* Rende il pulsante fisso in alto durante lo scorrimento */
 .btn-back-guida {
-    background: #eee;
-    padding: 10px 20px;
-    border-radius: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100; /* Lo tiene sopra il testo */
+    display: inline-block;
+    margin: 0; /* Rimosso il margine esterno per farlo aderire ai bordi */
+    padding: 15px 20px;
+    background: #f2f2f7; /* Colore di sfondo per coprire il testo che scorre */
+    border-radius: 0 0 12px 12px; /* Arrotondato solo sotto */
     border: none;
-    font-weight: bold;
     cursor: pointer;
-    margin-bottom: 20px;
+    font-weight: bold;
+    width: 100%; /* Occupa tutta la larghezza */
+    text-align: left;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 .guida-section h3 {
     margin-top: 0;
@@ -352,11 +360,10 @@
         </div>
 </div>
 
-<div id="view-guida" class="view-overlay">
-    <div style="max-width:800px; margin:auto; padding-bottom: 40px;">
+<div id="view-guida" class="view-overlay" style="padding-top: 0;"> <div style="max-width:800px; margin:auto; padding-bottom: 40px;">
         <button class="btn-back-guida" onclick="toggleView('main')">‹ Torna alla Home</button>
         
-        <h2 style="text-align:center; color: var(--btn-interni); margin-bottom:20px;">Guida all'Utilizzo</h2>
+        <h2 style="text-align:center; color: var(--btn-interni); margin: 20px 0;">Guida all'Utilizzo</h2>
         
         <div class="guida-content">
             
