@@ -743,8 +743,6 @@
 
     const data = document.getElementById('assignDate').value;
     const orat = document.getElementById('assignOratore').value.trim();
-    
-    // LEGGE IL LUOGO (Congregazione)
     let luogo = document.getElementById('assignLuogo').value.trim();
     
     if(!data || !orat || !num) return alert("Dati mancanti (Data, Oratore o Numero Schema)");
@@ -761,11 +759,27 @@
 
     let ev = getEventi();
     
-    // MODIFICA QUI: Rimuove l'evento esistente per quella data nella nostra congregazione
-    // (A prescindere che l'oratore sia lo stesso o meno, per evitare doppioni lo stesso giorno)
-    const idx = ev.findIndex(e => e.data === data && e.tipo === 'discorso');
-    if(idx !== -1) ev.splice(idx, 1);
+    // --- CONTROLLO E RIMOZIONE FISICA SOVRASCRITTURA ---
+    const eventoEsistente = ev.find(e => e.data === data);
 
+    if (eventoEsistente) {
+        let messaggio = "";
+        if (eventoEsistente.tipo === 'speciale') {
+            messaggio = `In questa data è già presente un evento speciale: "${eventoEsistente.nome}".\nVuoi eliminarlo e sostituirlo con questa assegnazione?`;
+        } else {
+            messaggio = `Esiste già un'assegnazione per il giorno ${new Date(data).toLocaleDateString()}:\n` +
+                        `"${eventoEsistente.oratore} - Schema #${eventoEsistente.schemaNum}"\n\n` +
+                        `Vuoi eliminare la vecchia assegnazione e salvare la nuova?`;
+        }
+
+        if (!confirm(messaggio)) return;
+
+        // RIMUOVIAMO l'evento vecchio dall'array per evitare che "riappaia"
+        ev = ev.filter(e => e.data !== data);
+    }
+    // --------------------------------------------------
+
+    // Ora aggiungiamo il nuovo evento all'array già pulito
     ev.push({ 
         id: Date.now(), 
         schemaNum: num, 
@@ -775,13 +789,19 @@
         tipo: 'discorso' 
     });
     
+    // Salvataggio definitivo nel database
     localStorage.setItem('eventi', JSON.stringify(ev));
+    
+    // Aggiornamento interfaccia
     chiudiAssegnazione();
     renderSchemi();
     renderCalendario();
     renderOratori(); 
-    if(typeof renderEsterni === "function") renderEsterni(); // Aggiorna anche vista esterni se aperta
+    if(typeof renderEsterni === "function") renderEsterni(); 
+    
+    alert("Assegnazione salvata e precedente rimossa.");
 }
+
 
         function verificaConflitti(nome, schema, data) {
             const eventi = getEventi();
