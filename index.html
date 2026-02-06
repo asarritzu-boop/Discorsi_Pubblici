@@ -100,13 +100,19 @@
 }
 
 .help-btn { 
-    position: absolute; top: 20px; left: 20px; 
-    width: 36px; height: 36px; 
-    background: var(--btn-calendario); 
+    position: absolute; 
+    top: 20px; 
+    left: 20px; 
+    width: 36px; 
+    height: 36px; 
+    background: rgba(0,0,0,0.06); /* Grigio leggero iOS */
     border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; 
-    cursor: pointer; border: none; color: white; 
-    font-weight: bold; font-size: 20px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    border: none; 
+    color: #007aff; /* Azzurro iOS */
     z-index: 10;
 }
 
@@ -162,7 +168,12 @@
 
     <div id="main-menu" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
         <div class="header">
-<button class="help-btn" onclick="toggleView('guida')">?</button>
+<button class="help-btn" onclick="toggleView('guida')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8.5 8.5c0-2.5 2.5-3.5 3.5-3.5s3.5 1 3.5 3.5c0 3-3.5 3.5-3.5 5.5"></path>
+        <line x1="12" y1="19" x2="12.01" y2="19"></line>
+    </svg>
+</button>
             <button class="share-btn" onclick="shareApp()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
             </button>
