@@ -1113,25 +1113,96 @@ document.getElementById('assignOratore').addEventListener('input', function(e) {
         }
 
         function downloadS99() { window.open("https://asarritzu-boop.github.io/Discorsi_Pubblici/S-99.csv"); }
-        function exportCSV() {
-            let csv = "Numero;Titolo\n" + getSchemi().map(s => `${s.num};${s.titolo}`).join("\n");
-            const blob = new Blob([csv], {type: 'text/csv'});
-            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "schemi.csv"; a.click();
-        }
-        function importCSV(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const rows = ev.target.result.split("\n").slice(1);
-                let schemi = getSchemi();
-                rows.forEach(r => {
-                    const [n, t] = r.split(";");
-                    if(n && t && !schemi.some(s => s.num === n.trim())) schemi.push({ num: n.trim(), titolo: t.trim(), blacklist: false });
-                });
-                localStorage.setItem('schemi', JSON.stringify(schemi)); renderSchemi();
-            };
-            reader.readAsText(e.target.files[0]);
-        }
 
+       function exportCSV() {
+    const schemi = getSchemi();
+    const eventi = getEventi();
+
+    // Una riga per ogni evento storico (una per ogni volta che uno schema è stato pronunciato)
+    const righe = eventi
+        .filter(e => e.tipo === 'discorso')
+        .sort((a, b) => new Date(a.data) - new Date(b.data))
+        .map(e => {
+            const schema = schemi.find(s => s.num === e.schemaNum);
+            const titolo = schema ? schema.titolo : '';
+            return `${e.schemaNum};"${titolo}";${e.data};"${e.oratore || ''}"`;
+        });
+
+    // Aggiunge anche gli schemi senza storico (senza data)
+    schemi.forEach(s => {
+        const haEventi = eventi.some(e => e.schemaNum === s.num && e.tipo === 'discorso');
+        if (!haEventi) {
+            righe.push(`${s.num};"${s.titolo}";;`);
+        }
+    });
+
+    const csv = '\uFEFF' + 'Numero;Titolo;Data;Oratore\n' + righe.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'backup_discorsi.csv';
+    link.click();
+       }
+
+       function importCSV(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        try {
+            const rows = ev.target.result.split(/\r?\n/).filter(r => r.trim() !== '');
+            const sep = rows[0].includes(';') ? ';' : ',';
+            const dataRows = rows.slice(1);
+
+            let schemi = getSchemi();
+            let eventi = getEventi();
+            let schemiAggiunti = 0;
+            let eventiAggiunti = 0;
+
+            dataRows.forEach(row => {
+                const cols = row.split(sep).map(c => c.replace(/^"|"$/g, '').trim());
+                const numero  = cols[0] || '';
+                const titolo  = cols[1] || '';
+                const data    = cols[2] || '';
+                const oratore = cols[3] || '';
+
+                if (!numero || !titolo) return;
+
+                // Aggiunge schema se non esiste già
+                if (!schemi.find(s => s.num === numero)) {
+                    schemi.push({ num: numero, titolo: titolo, blacklist: false });
+                    schemiAggiunti++;
+                }
+
+                // Aggiunge evento storico se c'è una data valida (YYYY-MM-DD)
+                if (data && /^\d{4}-\d{2}-\d{2}$/.test(data)) {
+                    const duplicato = eventi.some(ev => ev.data === data && ev.schemaNum === numero);
+                    if (!duplicato) {
+                        eventi.push({
+                            id: Date.now() + Math.random(),
+                            schemaNum: numero,
+                            data: data,
+                            oratore: oratore || 'Non specificato',
+                            luogo: 'INTERNO',
+                            tipo: 'discorso'
+                        });
+                        eventiAggiunti++;
+                    }
+                }
+            });
+
+            localStorage.setItem('schemi', JSON.stringify(schemi));
+            localStorage.setItem('eventi', JSON.stringify(eventi));
+            renderSchemi();
+            alert('✅ Importazione completata!\n• Schemi aggiunti: ' + schemiAggiunti + '\n• Date nello storico: ' + eventiAggiunti);
+        } catch (err) {
+            alert('Errore durante la lettura del file CSV.');
+        }
+        e.target.value = '';
+    };
+    reader.readAsText(file, 'UTF-8');
+       }
         function exportOratoriCSV() {
             let csv = "Nome;Congregazione;Telefono;Schemi;Note\n" + getOratori().map(o => `"${o.nome}";"${o.cong}";"${o.tel}";"${o.schemi}";"${o.note}"`).join("\n");
             const blob = new Blob([csv], {type: 'text/csv'});
