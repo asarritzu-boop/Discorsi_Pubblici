@@ -903,12 +903,14 @@
         }
 
         function eliminaEvento(id) {
-            if(confirm("Eliminare?")) {
-                let ev = getEventi().filter(e => e.id !== id);
-                localStorage.setItem('eventi', JSON.stringify(ev));
-                renderCalendario(); renderSchemi();
-            }
-        }
+    if(confirm("Eliminare questo impegno?")) {
+        let ev = getEventi().filter(e => e.id !== id);
+        localStorage.setItem('eventi', JSON.stringify(ev));
+        renderCalendario(); 
+        renderSchemi();
+        renderOratori(); // <-- Questa riga aggiorna in tempo reale l'anteprima!
+    }
+}
 
         let oratoreInModifica = null;
         function salvaOratore() {
@@ -1176,7 +1178,10 @@ function renderOratori() {
                 ${impegniFuturi.map(i => `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #ddd; padding-bottom:2px;">
                         <span>• ${new Date(i.data).toLocaleDateString()}: #${i.schemaNum} (${i.luogo || 'N/D'})</span>
-                        <button onclick="apriModificaAppuntamento(${i.id})" style="background:none; border:none; color:var(--btn-interni); font-size:10px; font-weight:bold;">MODIFICA</button>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+    <button onclick="apriModificaAppuntamento(${i.id})" style="background:none; border:none; color:var(--btn-interni); font-size:10px; font-weight:bold; cursor:pointer;">MODIFICA</button>
+    <button onclick="eliminaEvento(${i.id})" style="background:none; border:none; color:#ff3b30; font-size:14px; font-weight:bold; cursor:pointer;" title="Elimina impegno">✕</button>
+</div>
                     </div>
                 `).join('')}
             </div>`;
