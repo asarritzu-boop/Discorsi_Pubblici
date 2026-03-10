@@ -192,7 +192,8 @@
             <button class="btn-backup" onclick="exportData()">Esporta Backup</button>
         </div>
     </div>
-
+<button class="btn-backup" style="color: #ff3b30; margin-top: 15px; border-top: 1px solid #ddd; width: 100%; padding-top: 15px;" onclick="resetApp()">Reset Totale Dati</button>
+</div>
     <div id="view-schemi" class="view-overlay">
         <div style="width:95%; max-width:450px; margin:auto; padding: 20px 0;">
             <button class="btn-backup" onclick="toggleView('main')">‹ Indietro</button>
@@ -550,6 +551,16 @@
             reader.readAsText(file);
         }
 
+       function resetApp() {
+    // Chiede una doppia conferma per sicurezza
+    if (confirm("ATTENZIONE: Questa operazione eliminerà definitivamente tutti i dati (schemi, oratori, calendari). Vuoi procedere?")) {
+        if (confirm("Sei veramente sicuro? L'azione non è reversibile se non hai un backup.")) {
+            localStorage.clear(); // Svuota completamente il database locale
+            location.reload();    // Ricarica l'app allo stato iniziale
+        }
+    }
+       }
+       
         async function shareApp() {
             if (navigator.share) {
                 try { await navigator.share({ title: 'Discorsi Pubblici', url: window.location.href }); } catch (e) {}
