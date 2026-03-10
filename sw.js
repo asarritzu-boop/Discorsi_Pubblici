@@ -1,40 +1,49 @@
-const CACHE_NAME = 'discorsi-v2'; // Incrementato la versione
+const CACHE_NAME = 'discorsi-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icona-192.png',
   './icona-512.png',
-  './style.css', // Assicurati di includere CSS e JS se hanno nomi specifici
-  './script.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js'
 ];
 
-// Installazione e caching dei file statici
+// Installazione: cacha tutti gli asset incluse le librerie CDN
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  self.skipWaiting(); // Forza l'attivazione immediata
+  self.skipWaiting();
 });
 
-// Pulizia vecchie cache
+// Attivazione: elimina cache vecchie
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
   );
+  self.clients.claim();
 });
 
-// Strategia: Stale-While-Revalidate
+// Strategia: Cache first, fallback su rete
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(e.request).then((cachedResponse) => {
+    caches.match(e.request).then((cached) => {
+      return cached || fetch(e.request).then((response) => {
+        // Cacha dinamicamente eventuali nuove risorse
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(e.request, response.clone());
+          return response;
+        });
+      });
+    }).catch(() => {
+      // Fallback finale se sia cache che rete falliscono
+      return caches.match('./index.html');
+    })
+  );
+});      return cache.match(e.request).then((cachedResponse) => {
         const fetchPromise = fetch(e.request).then((networkResponse) => {
           // Se la rete risponde, salva una copia aggiornata in cache
           if (networkResponse.ok) {
