@@ -1034,9 +1034,7 @@ function generaPDFProgramma() {
         doc.rect(0, 0, 210, 22, 'F');
         doc.setTextColor(33, 41, 107);
         doc.setFontSize(15); doc.setFont('helvetica','bold');
-        doc.text('Programma Discorsi Pubblici', 105, 10, { align:'center' });
-        doc.setFontSize(9); doc.setFont('helvetica','normal');
-        doc.text(gruppo.label, 105, 17, { align:'center' });
+        doc.text('Programma Adunanza Pubblica', 105, 13, { align:'center' });
         doc.setTextColor(0,0,0);
 
         let curY = 27;
@@ -1099,12 +1097,10 @@ function generaPDFProgramma() {
         // Footer
         doc.setDrawColor(33,41,107); doc.setLineWidth(0.5);
         doc.line(10, 287, 200, 287);
-        doc.setFontSize(7); doc.setTextColor(150,150,150); doc.setFont('helvetica','normal');
-        doc.text(`${gruppo.label}  –  Generato il ${new Date().toLocaleDateString('it-IT')}`, 105, 291, { align:'center' });
     });
 
     const labelFile = mesiSel.map(b => `${nomiMesi[b.mese].substring(0,3)}${b.anno}`).join('_');
-    doc.save(`Programma_Discorsi_${labelFile}.pdf`);
+    doc.save(`Discorsi_Presidenti_Lettori_${labelFile}.pdf`);
     chiudiModalPDF();
 }
 
