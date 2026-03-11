@@ -1085,7 +1085,7 @@ function generaPDFProgramma() {
        doc.setFillColor(232, 234, 246);
         doc.rect(0, 0, 210, 22, 'F');
         doc.setTextColor(33, 41, 107);
-        doc.setFontSize(15); doc.setFont('helvetica','bold');
+        doc.setFontSize(20); doc.setFont('helvetica','bold');
         doc.text('Programma Adunanza Pubblica', 105, 13, { align:'center' });
         doc.setTextColor(0,0,0);
 
@@ -1094,7 +1094,7 @@ function generaPDFProgramma() {
         // Header mese
         doc.setFillColor(88, 86, 214);
         doc.rect(10, curY, 190, 8, 'F');
-        doc.setTextColor(255,255,255); doc.setFontSize(11); doc.setFont('helvetica','bold');
+        doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
         doc.text(gruppo.label.toUpperCase(), 105, curY + 5.5, { align:'center' });
         doc.setTextColor(0,0,0);
         curY += 11;
@@ -1109,7 +1109,7 @@ function generaPDFProgramma() {
             curY += 7;
 
             if (disc.speciale) {
-                doc.setFontSize(9); doc.setFont('helvetica','italic'); doc.setTextColor(200,0,0);
+                doc.setFontSize(12); doc.setFont('helvetica','italic'); doc.setTextColor(200,0,0);
                 doc.text(disc.titolo, 13, curY + 2);
                 doc.setTextColor(0,0,0);
                 curY += 8;
@@ -1122,7 +1122,7 @@ function generaPDFProgramma() {
                     startY: curY,
                     margin: { left:13, right:10 },
                     tableWidth: 187,
-                    styles: { fontSize:8.5, cellPadding:2, lineColor:[220,220,235], lineWidth:0.3 },
+                    styles: { fontSize:12, cellPadding:2, lineColor:[220,220,235], lineWidth:0.3 },
                     columnStyles: {
                         0: { fontStyle:'bold', cellWidth:45, fillColor:[235,235,248] },
                         1: { cellWidth:142 }
