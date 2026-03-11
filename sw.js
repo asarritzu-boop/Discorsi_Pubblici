@@ -1,4 +1,4 @@
-const CACHE_NAME = 'discorsi-v2';
+const CACHE_NAME = 'discorsi-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -9,7 +9,6 @@ const ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js'
 ];
 
-// Installazione: cacha tutti gli asset incluse le librerie CDN
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
@@ -17,7 +16,6 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-// Attivazione: elimina cache vecchie
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) =>
@@ -27,14 +25,37 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Strategia: Cache first, fallback su rete
 self.addEventListener('fetch', (e) => {
+  const url = e.request.url;
+
+  // Ignora richieste non cachabilii
+  if (
+    e.request.method !== 'GET' ||
+    url.startsWith('chrome-extension') ||
+    url.startsWith('blob:') ||
+    url.startsWith('data:')
+  ) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
+  // Cache first, fallback su rete
   e.respondWith(
     caches.match(e.request).then((cached) => {
-      return cached || fetch(e.request).then((response) => {
-        // Cacha dinamicamente eventuali nuove risorse
+      if (cached) return cached;
+      return fetch(e.request).then((response) => {
+        // Cacha solo risposte valide
+        if (!response || response.status !== 200 || response.type === 'opaque') {
+          return response;
+        }
         return caches.open(CACHE_NAME).then((cache) => {
           cache.put(e.request, response.clone());
+          return response;
+        });
+      });
+    }).catch(() => caches.match('./index.html'))
+  );
+});          cache.put(e.request, response.clone());
           return response;
         });
       });
