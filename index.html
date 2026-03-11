@@ -859,33 +859,56 @@
 
 
         function verificaConflitti(nome, schema, data) {
-            const eventi = getEventi();
-            const treMesi = 90 * 24 * 60 * 60 * 1000;
-            let msg = "";
-            
-            const dataOggiStr = new Date(data);
-            const meseOggi = dataOggiStr.getMonth();
-            const annoOggi = dataOggiStr.getFullYear();
+    const eventi = getEventi();
+    const treMesi = 90 * 24 * 60 * 60 * 1000;
+    const quattroMesi = 120 * 24 * 60 * 60 * 1000;
+    let msg = "";
+    
+    const dataOggiStr = new Date(data);
+    const meseOggi = dataOggiStr.getMonth();
+    const annoOggi = dataOggiStr.getFullYear();
 
-            eventi.forEach(e => {
-                if(e.oratore && e.oratore.toLowerCase() === nome.toLowerCase()) {
-                    const dataE = new Date(e.data);
-                    const diff = Math.abs(dataOggiStr - dataE);
-                    
-                    // Conflitto 3 mesi
-                    if(diff < treMesi) msg += `- Ha parlato il ${dataE.toLocaleDateString()} (< 3 mesi)\n`;
-                    
-                    // Conflitto stesso schema
-                    if(e.schemaNum === schema) msg += `- Ha già fatto lo schema #${schema} il ${dataE.toLocaleDateString()}\n`;
-                    
-                    // NUOVO: Conflitto stesso mese
-                    if(dataE.getMonth() === meseOggi && dataE.getFullYear() === annoOggi) {
-                        msg += `- ATTENZIONE: Ha già un impegno il ${dataE.toLocaleDateString()} (Stesso Mese)\n`;
-                    }
+    // 1. Puliamo il nome in ingresso: togliamo spazi extra ed eventuali parentesi quadre
+    const nomePulito = nome.split('[')[0].trim().toLowerCase();
+
+    eventi.forEach(e => {
+        // Se per qualche motivo l'evento non ha una data, saltalo
+        if (!e.data) return; 
+        
+        const dataE = new Date(e.data);
+        const diff = Math.abs(dataOggiStr - dataE);
+
+        // 2. Controlli specifici per l'ORATORE
+        if (e.oratore) {
+            // Puliamo anche il nome salvato nello storico per fare un confronto perfetto
+            const oratoreStoricoPulito = e.oratore.split('[')[0].trim().toLowerCase();
+            
+            if (oratoreStoricoPulito === nomePulito) {
+                // Conflitto 3 mesi
+                if (diff < treMesi) msg += `- Ha parlato il ${dataE.toLocaleDateString()} (< 3 mesi)\n`;
+                
+                // Conflitto stesso schema (fatto da lui)
+                if (String(e.schemaNum) === String(schema)) msg += `- Ha già fatto lo schema #${schema} il ${dataE.toLocaleDateString()}\n`;
+                
+                // Conflitto stesso mese
+                if (dataE.getMonth() === meseOggi && dataE.getFullYear() === annoOggi) {
+                    msg += `- ATTENZIONE: Ha già un impegno il ${dataE.toLocaleDateString()} (Stesso Mese)\n`;
                 }
-            });
-            return msg;
+            }
         }
+
+        // 3. Controllo specifico per lo SCHEMA (a prescindere dall'oratore)
+        // Usiamo String() per assicurarci che "10" e 10 vengano considerati uguali
+        if (e.schemaNum && String(e.schemaNum) === String(schema)) {
+            if (diff < quattroMesi) {
+                msg += `- ATTENZIONE: Lo schema #${schema} è stato già programmato il ${dataE.toLocaleDateString()} (da meno di 4 mesi)\n`;
+            }
+        }
+    });
+    
+    return msg;
+}
+
 
         function apriModalEvento() { document.getElementById('modal-evento').style.display = 'flex'; }
         function chiudiModalEvento() { document.getElementById('modal-evento').style.display = 'none'; }
