@@ -1140,7 +1140,7 @@ function caricaDettagliDiscorsiPDF() {
                 const nomeOratore = ev && ev.tipo === 'discorso' ? ev.oratore : '';
                 const tuttiOratori = [...(JSON.parse(localStorage.getItem('oratori'))||[]), ...(JSON.parse(localStorage.getItem('oratori_esterni'))||[])];
                 const oratoreInfo = tuttiOratori.find(o => o.nome === nomeOratore);
-                const congregazione = oratoreInfo?.cong ? ` (${oratoreInfo.cong})` : '';
+                const congregazione = ev?.luogo && ev.luogo.toUpperCase() !== 'INTERNO' ? ` (${ev.luogo})` : '';
                 discorsiTrovati.push({
                     data: dIso,
                     dataLabel: d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
