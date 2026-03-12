@@ -163,8 +163,84 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+   <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+           signOut, onAuthStateChanged, deleteUser,
+           reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, deleteDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD0YMJ2PPgLQh83uTollXKAskw_k1V5_5o",
+    authDomain: "discorsi-pubblici-management.firebaseapp.com",
+    projectId: "discorsi-pubblici-management",
+    storageBucket: "discorsi-pubblici-management.firebasestorage.app",
+    messagingSenderId: "957170333615",
+    appId: "1:957170333615:web:d678b4ece44ec9a7e4615a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  window._auth = getAuth(app);
+  window._db   = getFirestore(app);
+  window._fbFuncs = {
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, onAuthStateChanged, deleteUser,
+    reauthenticateWithCredential, EmailAuthProvider,
+    sendPasswordResetEmail,
+    doc, setDoc, getDoc, deleteDoc
+  };
+
+  window._fbFuncs.onAuthStateChanged(window._auth, user => {
+    const login = document.getElementById('view-login');
+    const menu  = document.getElementById('main-menu');
+    if (user) {
+      login.style.setProperty('display','none','important');
+      menu.style.setProperty('display','flex','important');
+      const badge = document.getElementById('user-badge');
+      if (badge) badge.textContent = '👤 ' + user.email;
+    } else {
+      login.style.setProperty('display','flex','important');
+      menu.style.setProperty('display','none','important');
+    }
+  });
+</script>
 </head>
 <body>
+    
+    <!-- SCHERMATA LOGIN / REGISTRAZIONE -->
+<div id="view-login" style="display:none; flex-direction:column; align-items:center; justify-content:center; width:100%; min-height:100vh; background:#f2f2f7;">
+  <img src="icona-192.png" style="width:80px; border-radius:18px; margin-bottom:16px; box-shadow:0 8px 20px rgba(0,0,0,0.15);">
+  <h2 style="font-size:18px; font-weight:700; color:#3a3a3c; margin-bottom:20px;">Discorsi Pubblici</h2>
+
+  <div style="background:white; border-radius:16px; padding:25px; width:85%; max-width:360px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+    <input type="email" id="loginEmail" placeholder="Email" style="margin-bottom:10px;">
+
+    <!-- Campo password con pulsante mostra/nascondi -->
+    <div style="position:relative; margin-bottom:16px;">
+      <input type="password" id="loginPassword" placeholder="Password" style="width:100%; box-sizing:border-box; padding-right:42px;">
+      <button onclick="togglePassword()" id="btnTogglePwd"
+        style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:#8e8e93;">
+        👁️
+      </button>
+    </div>
+
+    <button class="btn btn-calendario" onclick="doLogin()"    style="width:100%; margin-bottom:10px;">ACCEDI</button>
+    <button class="btn btn-interni"   onclick="doRegister()" style="width:100%;">REGISTRATI</button>
+    <button onclick="recuperaPassword()" style="background:none; border:none; color:#007aff; font-size:13px; margin-top:12px; cursor:pointer; width:100%;">
+      Password dimenticata?
+    </button>
+     
+
+    <div id="loginMsg" style="display:none; margin-top:12px; padding:10px 14px; border-radius:10px; font-size:13px; text-align:center;"></div>
+  </div>
+
+  <p style="font-size:11px; color:#8e8e93; margin-top:20px; text-align:center;">
+    Dati salvati in locale e sincronizzati sul Cloud
+  </p>
+</div>
 
     <div id="main-menu" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
         <div class="header">
@@ -187,13 +263,61 @@
             <button class="btn btn-interni" onclick="toggleView('interni')">ORATORI INTERNI</button>
         </div>
         <div class="footer-menu">
-            <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importData(event)">
-            <button class="btn-backup" onclick="document.getElementById('fileInput').click()">Importa Backup</button>
-            <button class="btn-backup" onclick="exportData()">Esporta Backup</button>
-        </div>
-    </div>
-<button class="btn-backup" style="color: #ff3b30; margin-top: 15px; border-top: 1px solid #ddd; width: 100%; padding-top: 15px;" onclick="resetApp()">Reset Totale Dati</button>
+          <span id="user-badge" style="font-size:12px; color:#8e8e93; margin-bottom:8px;">👤</span>
+          <input type="file" id="fileInput" accept=".json" style="display:none;" onchange="importData(event)">
+
+          <!-- Griglia 2 colonne -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:90%; max-width:360px;">
+
+            <!-- Backup locale -->
+            <button onclick="document.getElementById('fileInput').click()" style="background:white; border:none; border-radius:12px; padding:8px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+              <span style="font-size:22px;">📥</span>
+              <span style="font-size:11px; font-weight:600; color:#3a3a3c;">Importa</span>
+              <span style="font-size:10px; color:#8e8e93;">Backup locale</span>
+            </button>
+
+            <button onclick="exportData()" style="background:white; border:none; border-radius:12px; padding:8px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+              <span style="font-size:22px;">📤</span>
+              <span style="font-size:11px; font-weight:600; color:#3a3a3c;">Esporta</span>
+              <span style="font-size:10px; color:#8e8e93;">Backup locale</span>
+            </button>
+
+            <!-- Cloud -->
+            <button onclick="syncToCloud()" style="background:white; border:none; border-radius:12px; padding:8px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+              <span style="font-size:22px;">☁️</span>
+              <span style="font-size:11px; font-weight:600; color:#5856d6;">Salva</span>
+              <span style="font-size:10px; color:#8e8e93;">su Cloud</span>
+            </button>
+
+            <button onclick="syncFromCloud()" style="background:white; border:none; border-radius:12px; padding:8px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+              <span style="font-size:22px;">⬇️</span>
+              <span style="font-size:11px; font-weight:600; color:#34c759;">Ripristina</span>
+              <span style="font-size:10px; color:#8e8e93;">da Cloud</span>
+            </button>
+
+            <!-- Account -->
+            <button onclick="doLogout()" style="background:white; border:none; border-radius:12px; padding:8px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+              <span style="font-size:22px;">🚪</span>
+              <span style="font-size:11px; font-weight:600; color:#ff9500;">Logout</span>
+              <span style="font-size:10px; color:#8e8e93;">Esci</span>
+            </button>
+
+            <button onclick="eliminaAccount()" style="background:white; border:none; border-radius:12px; padding:8px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+              <span style="font-size:22px;">🗑️</span>
+              <span style="font-size:11px; font-weight:600; color:#ff3b30;">Elimina</span>
+              <span style="font-size:10px; color:#8e8e93;">Account</span>
+            </button>
+
+          </div>
+
+          <!-- Reset separato in fondo -->
+          <button onclick="resetApp()" style="margin-top:12px; background:none; border:none; color:#ff3b30; font-size:12px; font-weight:500; padding:8px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
+            ⚠️ Reset Totale Dati
+          </button>
 </div>
+        </div>
+       
+
     <div id="view-schemi" class="view-overlay">
         <div style="width:95%; max-width:450px; margin:auto; padding: 20px 0;">
             <button class="btn-backup" onclick="toggleView('main')">‹ Indietro</button>
@@ -418,6 +542,8 @@
                     <li><strong>ORATORI INTERNI:</strong> Gestione oratori locali e schemi personali.</li>
                     <li><strong>Importa Backup:</strong> Carica un file .json per ripristinare i dati.</li>
                     <li><strong>Esporta Backup:</strong> Scarica il database attuale in formato .json.</li>
+                    <li><strong>FUNZIONE CLOUD</strong> Salva il database attuale OnLine. 
+                     Con le stesse credenziali (email e password) si condividono i dati su altri dispositivi.</li>
                 </ul>
             </div>
 
@@ -428,7 +554,6 @@
                     <li><strong>Giorno adunanza:</strong> Seleziona Sabato o Domenica per evidenziare i weekend corretti.</li>
                     <li><strong>Frecce ‹ e ›:</strong> Naviga tra i mesi dell'anno.</li>
                     <li><strong>+ AGGIUNGI EVENTO:</strong> Inserisce eventi speciali (Assemblee, Congressi, Visita) che bloccano la data in rosso.</li>
-                    <li><strong>📄 PDF</strong> Crea il programma per l'adunanza pubblica da stampare, inserendo i nomi del presidente e lettore W.</li>
                     <li><strong>Pulsante + (nel giorno):</strong> Apre la finestra di assegnazione per quella data specifica.</li>
                     <li><strong>Pulsante ✕ (nel giorno):</strong> Elimina l'impegno o l'evento programmato.</li>
                 </ul>
@@ -551,8 +676,8 @@
             };
             reader.readAsText(file);
         }
-
-       function resetApp() {
+        
+        function resetApp() {
     // Chiede una doppia conferma per sicurezza
     if (confirm("ATTENZIONE: Questa operazione eliminerà definitivamente tutti i dati (schemi, oratori, calendari). Vuoi procedere?")) {
         if (confirm("Sei veramente sicuro? L'azione non è reversibile se non hai un backup.")) {
@@ -560,8 +685,9 @@
             location.reload();    // Ricarica l'app allo stato iniziale
         }
     }
-       }
-       
+}
+
+
         async function shareApp() {
             if (navigator.share) {
                 try { await navigator.share({ title: 'Discorsi Pubblici', url: window.location.href }); } catch (e) {}
@@ -856,8 +982,6 @@
     }
 }
 
-
-
         function verificaConflitti(nome, schema, data) {
     const eventi = getEventi();
     const treMesi = 90 * 24 * 60 * 60 * 1000;
@@ -910,6 +1034,7 @@
 }
 
 
+
         function apriModalEvento() { document.getElementById('modal-evento').style.display = 'flex'; }
         function chiudiModalEvento() { document.getElementById('modal-evento').style.display = 'none'; }
         
@@ -927,14 +1052,12 @@
         }
 
         function eliminaEvento(id) {
-    if(confirm("Eliminare questo impegno?")) {
-        let ev = getEventi().filter(e => e.id !== id);
-        localStorage.setItem('eventi', JSON.stringify(ev));
-        renderCalendario(); 
-        renderSchemi();
-        renderOratori(); // <-- Questa riga aggiorna in tempo reale l'anteprima!
-    }
-}
+            if(confirm("Eliminare?")) {
+                let ev = getEventi().filter(e => e.id !== id);
+                localStorage.setItem('eventi', JSON.stringify(ev));
+                renderCalendario(); renderSchemi();
+            }
+        }
 
         let oratoreInModifica = null;
         function salvaOratore() {
@@ -1103,7 +1226,7 @@ function generaPDFProgramma() {
             const gi = discorsi.indexOf(disc);
 
             // Data
-            doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(33,41,107);
+            doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.setTextColor(33,41,107);
             doc.text(disc.dataLabel.charAt(0).toUpperCase() + disc.dataLabel.slice(1), 13, curY + 5);
             doc.setTextColor(0,0,0);
             curY += 7;
@@ -1202,10 +1325,7 @@ function renderOratori() {
                 ${impegniFuturi.map(i => `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #ddd; padding-bottom:2px;">
                         <span>• ${new Date(i.data).toLocaleDateString()}: #${i.schemaNum} (${i.luogo || 'N/D'})</span>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-    <button onclick="apriModificaAppuntamento(${i.id})" style="background:none; border:none; color:var(--btn-interni); font-size:10px; font-weight:bold; cursor:pointer;">MODIFICA</button>
-    <button onclick="eliminaEvento(${i.id})" style="background:none; border:none; color:#ff3b30; font-size:14px; font-weight:bold; cursor:pointer;" title="Elimina impegno">✕</button>
-</div>
+                        <button onclick="apriModificaAppuntamento(${i.id})" style="background:none; border:none; color:var(--btn-interni); font-size:10px; font-weight:bold;">MODIFICA</button>
                     </div>
                 `).join('')}
             </div>`;
@@ -1788,7 +1908,151 @@ function pulisciRicercaSchemi() {
     document.getElementById('searchSchema').focus();
 }
 
-        
+// ============================================================
+// FIREBASE: AUTH + CLOUD SYNC + ELIMINA ACCOUNT
+// ============================================================
+
+function togglePassword() {
+  const input = document.getElementById('loginPassword');
+  const btn   = document.getElementById('btnTogglePwd');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+}
+
+function showLoginMsg(testo, tipo) {
+  const el = document.getElementById('loginMsg');
+  const colori = {
+    ok:     { bg: '#d4edda', color: '#155724', border: '#c3e6cb' },
+    errore: { bg: '#f8d7da', color: '#721c24', border: '#f5c6cb' },
+    info:   { bg: '#d1ecf1', color: '#0c5460', border: '#bee5eb' }
+  };
+  const c = colori[tipo] || colori.info;
+  el.style.cssText = `display:block; background:${c.bg}; color:${c.color}; border:1px solid ${c.border}; margin-top:12px; padding:10px 14px; border-radius:10px; font-size:13px; text-align:center;`;
+  el.textContent = testo;
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  if (!email || !pass) return showLoginMsg('Inserisci email e password', 'info');
+  try {
+    await window._fbFuncs.signInWithEmailAndPassword(window._auth, email, pass);
+  } catch(e) {
+    const msg = (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password')
+      ? 'Email o password errati'
+      : 'Errore di accesso: ' + e.message;
+    showLoginMsg(msg, 'errore');
+  }
+}
+
+async function doRegister() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  if (!email || !pass) return showLoginMsg('Inserisci email e password', 'info');
+  if (pass.length < 6) return showLoginMsg('La password deve avere almeno 6 caratteri', 'errore');
+  try {
+    await window._fbFuncs.createUserWithEmailAndPassword(window._auth, email, pass);
+    showLoginMsg('✅ Registrazione avvenuta con successo! Benvenuto.', 'ok');
+  } catch(e) {
+    const msg = e.code === 'auth/email-already-in-use'
+      ? 'Questa email è già registrata'
+      : e.code === 'auth/invalid-email'
+      ? 'Email non valida'
+      : 'Errore: ' + e.message;
+    showLoginMsg(msg, 'errore');
+  }
+}
+
+async function doLogout() {
+  if (confirm('Vuoi uscire dall\'account?')) {
+    await window._fbFuncs.signOut(window._auth);
+  }
+}
+
+async function eliminaAccount() {
+  const user = window._auth.currentUser;
+  if (!user) return;
+  if (!confirm('⚠️ Eliminare l\'account?\nQuesta operazione è irreversibile e cancellerà anche tutti i dati Cloud.')) return;
+
+  const pass = prompt('Inserisci la tua password per confermare:');
+  if (!pass) return;
+
+  try {
+    const { reauthenticateWithCredential, EmailAuthProvider, deleteUser, doc, deleteDoc } = window._fbFuncs;
+    const credential = EmailAuthProvider.credential(user.email, pass);
+    await reauthenticateWithCredential(user, credential);
+
+    try {
+      await deleteDoc(doc(window._db, 'users', user.uid, 'backup', 'main'));
+    } catch(e) { /* nessun backup, ignora */ }
+
+    await deleteUser(user);
+    localStorage.clear();
+    alert('✅ Account eliminato con successo.');
+  } catch(e) {
+    const msg = (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential')
+      ? 'Password errata. Account non eliminato.'
+      : 'Errore: ' + e.message;
+    alert(msg);
+  }
+}
+
+async function syncToCloud() {
+  const user = window._auth.currentUser;
+  if (!user) return alert('Non sei autenticato');
+  const { doc, setDoc } = window._fbFuncs;
+  const data = {
+    schemi:          localStorage.getItem('schemi')          || '[]',
+    eventi:          localStorage.getItem('eventi')          || '[]',
+    oratori:         localStorage.getItem('oratori')         || '[]',
+    oratori_esterni: localStorage.getItem('oratori_esterni') || '[]',
+    giornoAdunanza:  localStorage.getItem('giornoAdunanza')  || '0',
+    updatedAt:       new Date().toISOString()
+  };
+  try {
+    await setDoc(doc(window._db, 'users', user.uid, 'backup', 'main'), data);
+    alert('✅ Dati salvati sul Cloud!');
+  } catch(e) {
+    alert('Errore salvataggio: ' + e.message);
+  }
+}
+
+async function syncFromCloud() {
+  const user = window._auth.currentUser;
+  if (!user) return alert('Non sei autenticato');
+  const { doc, getDoc } = window._fbFuncs;
+  try {
+    const snap = await getDoc(doc(window._db, 'users', user.uid, 'backup', 'main'));
+    if (!snap.exists()) return alert('Nessun backup Cloud trovato per questo account.');
+    if (!confirm('Sovrascrivere i dati locali con quelli del Cloud?')) return;
+    const d = snap.data();
+    ['schemi','eventi','oratori','oratori_esterni','giornoAdunanza'].forEach(k => {
+      if (d[k]) localStorage.setItem(k, d[k]);
+    });
+    alert('✅ Dati ripristinati dal Cloud!');
+    location.reload();
+  } catch(e) {
+    alert('Errore ripristino: ' + e.message);
+  }
+}
+        async function recuperaPassword() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) return showLoginMsg('Inserisci prima la tua email', 'info');
+  try {
+    await window._fbFuncs.sendPasswordResetEmail(window._auth, email);
+    showLoginMsg('✅ Email di recupero inviata! Controlla la tua casella.', 'ok');
+  } catch(e) {
+    const msg = e.code === 'auth/user-not-found'
+      ? 'Nessun account trovato con questa email'
+      : 'Errore: ' + e.message;
+    showLoginMsg(msg, 'errore');
+  }
+}
     </script>
 </body>
 </html>
