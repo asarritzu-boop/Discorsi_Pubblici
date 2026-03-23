@@ -1135,7 +1135,7 @@ function caricaDettagliDiscorsiPDF() {
         while (d.getMonth() === mese) {
             if (d.getDay() === giorno) {
                 const dIso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                const ev = eventi.find(e => e.data === dIso && e.tipo !== 'trasferta') || null;w
+                const ev = eventi.find(e => e.data === dIso && e.tipo !== 'trasferta') || null;
                 const sInfo = ev && ev.tipo === 'discorso' ? schemi.find(s => s.num === ev.schemaNum) : null;
                 const nomeOratore = ev && ev.tipo === 'discorso' ? ev.oratore : '';
                 const tuttiOratori = [...(JSON.parse(localStorage.getItem('oratori'))||[]), ...(JSON.parse(localStorage.getItem('oratori_esterni'))||[])];
