@@ -197,10 +197,14 @@
     const login = document.getElementById('view-login');
     const menu  = document.getElementById('main-menu');
     if (user) {
-      login.style.setProperty('display','none','important');
-      menu.style.setProperty('display','flex','important');
-      const badge = document.getElementById('user-badge');
-      if (badge) badge.textContent = '👤 ' + user.email;
+  login.style.setProperty('display','none','important');
+  menu.style.setProperty('display','flex','important');
+  const badge = document.getElementById('user-badge');
+  if (badge) badge.textContent = '👤 ' + user.email;
+  if (!sessionStorage.getItem('cloud_ripristinato')) {
+      sessionStorage.setItem('cloud_ripristinato', '1');
+      syncFromCloud();
+  }
     } else {
       login.style.setProperty('display','flex','important');
       menu.style.setProperty('display','none','important');
