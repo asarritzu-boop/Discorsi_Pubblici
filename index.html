@@ -203,7 +203,7 @@
   if (badge) badge.textContent = '👤 ' + user.email;
   if (!sessionStorage.getItem('cloud_ripristinato')) {
       sessionStorage.setItem('cloud_ripristinato', '1');
-      syncFromCloud();
+      syncFromCloudSilenzioso();
   }
     } else {
       login.style.setProperty('display','flex','important');
@@ -2026,6 +2026,23 @@ async function syncToCloud() {
   }
 }
 
+       async function syncFromCloudSilenzioso() {
+  const user = window._auth.currentUser;
+  if (!user) return;
+  const { doc, getDoc } = window._fbFuncs;
+  try {
+    const snap = await getDoc(doc(window._db, 'users', user.uid, 'backup', 'main'));
+    if (!snap.exists()) return;
+    const d = snap.data();
+    ['schemi','eventi','oratori','oratori_esterni','giornoAdunanza'].forEach(k => {
+      if (d[k]) localStorage.setItem(k, d[k]);
+    });
+    location.reload();
+  } catch(e) {
+    console.error('Errore ripristino automatico:', e.message);
+  }
+       }
+       
 async function syncFromCloud() {
   const user = window._auth.currentUser;
   if (!user) return alert('Non sei autenticato');
